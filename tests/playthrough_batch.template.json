@@ -1,0 +1,23 @@
+[
+ {"action":"navigate","url":"http://127.0.0.1:8791/index.html","waitUntil":"none"},
+ {"action":"sleep","duration":"2s"},
+ {"action":"eval","expression":"document.querySelector('.pick[data-k=CRITTER]').click(); 'ok'"},
+ {"action":"screenshot","file":"OUT/CRITTER_0_home.png"},
+ {"action":"eval","expression":"window.__errs=[];window.addEventListener('error',e=>__errs.push(String(e.message)));document.getElementById('startBtn').click(); 'started'"},
+ {"action":"sleep","duration":"2500ms"},
+ {"action":"eval","expression":"window.__T=(()=>{const cv=document.getElementById('cv');const W=896,H=1200;const pt=(x,y)=>{const r=cv.getBoundingClientRect();return {clientX:r.left+x*r.width/W,clientY:r.top+y*r.height/H}};const ev=(t,x,y)=>cv.dispatchEvent(new PointerEvent(t,{...pt(x,y),bubbles:true,pointerId:1,isPrimary:true,buttons:t==='pointerup'?0:1}));const sleep=ms=>new Promise(r=>setTimeout(r,ms));async function scrub(x0,x1,y0,y1,step){ev('pointerdown',x0,y0);let d=1;for(let y=y0;y<=y1;y+=step){for(let i=0;i<=22;i++){const x=d>0?x0+(x1-x0)*i/22:x1-(x1-x0)*i/22;ev('pointermove',x,y);await sleep(6)}d=-d}ev('pointerup',x0,y1)}async function click(x,y){ev('pointerdown',x,y);await sleep(40);ev('pointerup',x,y)}return {scrub,click,sleep,ev}})(); window.__REPAIR__.step"},
+ {"action":"screenshot","file":"OUT/CRITTER_1_broken.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{const R=window.__REPAIR__,T=__T,log=[];for(let k=0;k<4&&R.step==='dust';k++){await T.scrub(40,860,60,1160,45);await T.sleep(500)}await T.sleep(1800);log.push('dust->'+R.step);for(let k=0;k<4&&R.step==='wash';k++){await T.scrub(40,860,60,1160,45);await T.sleep(500)}await T.sleep(1800);log.push('wash->'+R.step);return log.join(' ')})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_2_wet.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{const R=window.__REPAIR__,T=__T;for(let k=0;k<3&&R.step==='dry';k++){for(const [x,y] of R.dropPts()){T.ev('pointerdown',x,y);for(let i=0;i<12;i++){T.ev('pointermove',x+(i%2?4:-4),y);await T.sleep(100)}T.ev('pointerup',x,y)}}await T.sleep(1800);return 'dry->'+R.step+' drops='+R.drops})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_3_flat.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{const R=window.__REPAIR__,T=__T;for(let i=0;i<5;i++){document.getElementById('cotton').click();await T.sleep(1500)}await T.sleep(1800);return 'stuff->'+R.step+' stuff='+R.stuff})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_4_stitch.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{const R=window.__REPAIR__,T=__T;for(const [x,y] of R.stitchPts()){await T.click(x,y);await T.sleep(300)}await T.sleep(1800);return 'stitch->'+R.step})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_5_eye.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{const R=window.__REPAIR__,T=__T;const e=R.eye();await T.click(e.x,e.y);await T.sleep(1800);const p=R.pendant();for(let k=0;k<5&&R.step==='polish';k++){await T.scrub(p.x-p.r-10,p.x+p.r+10,p.y-p.r-10,p.y+p.r+10,12);await T.sleep(500)}await T.sleep(1800);return 'eye/polish->'+R.step})()"},
+ {"action":"eval","print":"true","expression":"(async()=>{const T=__T;document.querySelector('.tool[data-g]').click();await T.click(300,250);await T.sleep(900);return 'gift placed'})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_6_gift.png"},
+ {"action":"eval","print":"true","expression":"(async()=>{document.getElementById('doneBtn').click();await __T.sleep(3800);return 'celebrate='+window.__REPAIR__.celebrate+' shelf='+localStorage.getItem('critterRepairShelf')+' errs='+JSON.stringify(__errs)})()"},
+ {"action":"screenshot","file":"OUT/CRITTER_7_card.png"}
+]
