@@ -275,7 +275,7 @@ basket.position.set(-3.2, .17, .3); basket.castShadow = true; room.add(basket);
 yarnCols.slice(0, 3).forEach((c, i) => { const y = new THREE.Mesh(new THREE.SphereGeometry(.17, 28, 20), std({ map: yarnTex(c), roughness: .95 })); y.position.set(-3.35 + i * .2, .33, .25 + (i % 2) * .15); room.add(y); });
 
 // Desk lamp
-const lamp = new THREE.Group(); lamp.position.set(3.2, 0, -.7); room.add(lamp);
+const lamp = new THREE.Group(); lamp.position.set(4.3, 0, -1.3); room.add(lamp);
 const lampMat = std({ color: '#f6d7a8', roughness: .35, metalness: .3 });
 const lb = new THREE.Mesh(new THREE.CylinderGeometry(.3, .34, .08, 32), lampMat); lb.position.y = .04; lamp.add(lb);
 const arm1 = new THREE.Mesh(new THREE.CylinderGeometry(.035, .035, 1.4, 12), lampMat); arm1.position.set(-.18, .72, 0); arm1.rotation.z = .28; lamp.add(arm1);
@@ -300,8 +300,8 @@ key.position.set(-2.5, 5.5, 4.5); key.target.position.set(0, .9, 0);
 key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0004; key.shadow.normalBias = .02;
 Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -2, near: .5, far: 16 });
 scene.add(key, key.target);
-const lampSpot = new THREE.SpotLight('#ffd9a0', 26, 0, .6, .7, 1.3);
-lampSpot.position.set(2.0, 1.66, -.6); lampSpot.target.position.set(0, .9, .1);
+const lampSpot = new THREE.SpotLight('#ffd9a0', 34, 0, .6, .7, 1.3);
+lampSpot.position.set(3.1, 1.66, -1.2); lampSpot.target.position.set(0, .9, .1);
 scene.add(lampSpot, lampSpot.target);
 const rim = new THREE.DirectionalLight('#b9c8ff', .9); rim.position.set(3, 3, -3); scene.add(rim);
 
@@ -472,6 +472,7 @@ function surfaceHits(root, n, minDist, prefer) {
     if (out.some((h) => h.point.distanceTo(hit.point) < minDist)) continue;
     if (game.damages.some((d) => d.anchor.getWorldPosition(tmpV).distanceTo(hit.point) < minDist)) continue;
     const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+    if (normal.y < -.2) continue;  // underside: never reachable by turning the turntable
     out.push({ point: hit.point.clone(), normal, object: hit.object });
   }
   return out;
@@ -683,9 +684,10 @@ function findDamage(type) {
   const toolEl = document.querySelector(`#tools .tool[data-t="${DMG[type].tool}"]`);
   if (toolEl) { toolEl.classList.remove('wiggle'); void toolEl.offsetWidth; toolEl.classList.add('wiggle'); }
   if (!d.loose && !d.body) {
-    // Spin the turntable so that damage faces the camera.
-    const p = d.anchor.getWorldPosition(new THREE.Vector3());
-    const local = turntable.worldToLocal(p.clone());
+    // Spin the turntable so the damage's surface faces the camera (use its normal, not its position:
+    // spots near the spin axis like the head top or belly have almost no horizontal offset).
+    const n = new THREE.Vector3(0, 0, 1).applyQuaternion(d.anchor.getWorldQuaternion(new THREE.Quaternion()));
+    const local = n.applyQuaternion(turntable.getWorldQuaternion(new THREE.Quaternion()).invert());
     const target = -Math.atan2(local.x, local.z);
     let delta = target - turntable.rotation.y; delta = Math.atan2(Math.sin(delta), Math.cos(delta));
     game.spinTo = turntable.rotation.y + delta;
@@ -886,6 +888,7 @@ function wrongToolHint(x, y) {
 /* ---------- finale: wind-up heart ---------- */
 function wakeUp(point) {
   game.heartIn = true; game.state = 'waking';
+  game.spinTo = Math.round(turntable.rotation.y / (Math.PI * 2)) * Math.PI * 2;  // turn to face the child
   selectTool(null); renderTools();
   const chest = game.critter.parts.torso.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, .05, .3));
   spawn(TEX.heart, camera.position.clone().add(new THREE.Vector3(0, -1, -1.3)), { to: chest, life: 1.2, size: .3, onArrive: () => {

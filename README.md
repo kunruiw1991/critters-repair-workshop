@@ -1,35 +1,27 @@
-# 🧵 Critter Repair Workshop
+# 🧸 Critter Repair Workshop 3D
 
-A gentle, ASMR-style plush **doll-repair game** for Chuyu (5), adapted from the
-"Poppy Playtime 2 – Mommy Long Legs doll repair" restoration videos. Instead of a
-spooky doll, you fix up our three family Smiling Critters after a big muddy
-adventure:
+A cozy 3D plush-repair clinic for our family's Smiling Critters, built for a 5-year-old.
+Inspired by doll-restoration videos, with only the gentle, satisfying parts kept.
 
-| Critter | Who | Pendant to polish |
-| --- | --- | --- |
-| 🦇 **LunaBat** | Chuyu | Golden moon & star |
-| 🦊 **SunnyFox** | Mom | Golden storm lantern |
-| 🦨 **PoppyDash** | Dad | Popcorn bucket |
+**Play:** https://kunruiw1991.github.io/critters-repair-workshop/
 
-**Live:** https://kunruiw1991.github.io/critters-repair-workshop/
+## Patients
+| Critter | Who |
+|---|---|
+| 🦇 LunaBat | Chuyu |
+| 🦊 SunnyFox | Mom |
+| 🍿 PoppyDash | Dad |
 
-## The 8 repair steps
+## How it plays
+- Every visit rolls **random damage** on the 3D plush: mud, dust and cobwebs, prickly burrs, torn seams, plus 3 surprise problems (lost button eye, loose ear, flat stuffing, faded colors, dull pendant).
+- Fix things **in any order**. Drag to spin the turntable; tap a ticket chip and the critter turns to show you that spot.
+- **10 tools:** 🧹 brush, 🧽 sponge (leaves wet spots), 💨 dryer, 🪡 needle (4 stitches, also sews the ear back), 🔘 button eye, ☁️ cotton, 🖌️ color spray, 🧤 polish, tweezers, and the final 💝 wind-up heart that wakes the critter up.
+- Wrong tool? The critter gives a friendly hint and the right tool wiggles.
+- Dress-up (bow, flowers, party hat, scarf, star), then the critter hops onto the **Happy Shelf**. Before/after photo card. Shelf and stars are saved on the device.
+- Slow, calm motion; ⏸ pause and ⏹ stop are always available.
 
-1. 🧹 **Brush off the dust**: sweep away dust bunnies and cobwebs
-2. 🧽 **Bubble bath**: scrub the mud off and watch the colors come back
-3. 💨 **Blow dry**: hold the dryer over each water drop
-4. ☁️ **Fluffy stuffing**: tap the cotton; the flat plush puffs back up
-5. 🪡 **Stitch the tear**: tap the glowing dots in order to sew the seam
-6. 🔘 **Sew on an eye**: put the missing button eye back
-7. ✨ **Shine the pendant**: rub it until it sparkles
-8. 🎀 **A little gift**: add a bow, flower or star, then get a thank-you and a before/after card
-
-## Built for a 5-year-old
-
-- Slow, calm motion only: no fast scrolling, no flashes, and at most a few slow bubbles or hearts at a time
-- Big touch targets, forgiving completion (about 90% clean is enough), and no fail states
-- Soft Web Audio sounds (brushing, bubbles, dryer hum, sewing plucks, chimes) plus spoken hints (🔈 Say it)
-- ⏸ Pause / ⏹ Stop / 🔊 sound toggle; a repaired-friends ★ shelf is saved in `localStorage`
-- Uses the same art style as the other critter apps (`1 critter = 1 canonical art`); damage is drawn procedurally on top of the clean art, so every play is a little different
-
-Zero backend: a single `index.html` plus `critters/` and `icons/` images.
+## Tech
+- Three.js r161, no build step, no backend. Open `index.html` from any static host.
+- SunnyFox and LunaBat rigs come from [critters-airplane-3d](https://github.com/kunruiw1991/critters-airplane-3d). PoppyDash is a new rig in the same style.
+- Background music (workshop theme, sewing lullaby, celebration) generated with Lyria; sound effects are synthesized with WebAudio.
+- `tests/make_batch.py` builds a headless gbrowser playthrough that repairs every damage, wakes the critter, dresses it and checks the shelf save.
