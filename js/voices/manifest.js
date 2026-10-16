@@ -1,3 +1,27 @@
-// Licensed recordings only. Map an exact Chinese dialogue line to its audio URL.
-// No Luo Tianyi recordings are bundled; Mandarin device speech is the fallback.
-export const VOICE_CLIPS = {};
+// Pre-rendered Mandarin dialogue: Microsoft Xiaoyi neural synthetic voice.
+export const VOICE_CLIPS = {
+  "哎呀，飞过森林的时候，我弄得脏兮兮的。帮我修好吧！": "voices/lunabat-hello.mp3",
+  "我又变得软乎乎啦！我们一起飞向月亮吧！": "voices/lunabat-thanks.mp3",
+  "走过泥泞小路，我的小灯笼不亮了。帮帮妈妈的伙伴吧！": "voices/sunnyfox-hello.mp3",
+  "小灯笼又亮起来啦！谢谢你这么细心地照顾我！": "voices/sunnyfox-thanks.mp3",
+  "我跑得太快，扑通一下掉进了水坑！帮爸爸的伙伴补一补吧！": "voices/poppydash-hello.mp3",
+  "又变得蓬松啦！谢谢你，我们一起跑步、分享爆米花吧！": "voices/poppydash-thanks.mp3",
+  "我在阳光小路上发现了一个大泥坑！帮我变干净，好吗？": "voices/dogday-hello.mp3",
+  "你让今天更闪亮了！送你一个暖暖的拥抱！": "voices/dogday-thanks.mp3",
+  "我的小窝落满了灰尘和蜘蛛网。帮我变回软乎乎的样子吧！": "voices/catnap-hello.mp3",
+  "好柔软，好舒服！谢谢你，祝你做个甜甜的梦！": "voices/catnap-thanks.mp3",
+  "我一下跳进了小灌木丛！帮我修好，我们再一起蹦蹦跳！": "voices/hoppyhopscotch-hello.mp3",
+  "跳一跳，真开心！你是最棒的小伙伴！": "voices/hoppyhopscotch-thanks.mp3",
+  "探险时，我的绒毛打结了。我们一起想办法吧！": "voices/bubbabubbaphant-hello.mp3",
+  "这个办法真聪明！送你一个大大的象象抱！": "voices/bubbabubbaphant-thanks.mp3",
+  "画画的时候，我把绒毛弄乱了。帮帮我，好吗？": "voices/craftycorn-hello.mp3",
+  "这个补丁真漂亮！你是一位小小艺术家！": "voices/craftycorn-thanks.mp3",
+  "野餐真好玩，可是我弄得满身都是泥。帮我洗干净吧！": "voices/pickypiggy-hello.mp3",
+  "又变得香香软软啦！我们一起分享小苹果吧！": "voices/pickypiggy-thanks.mp3",
+  "我抱了好多朋友，缝线都松开了！帮我缝好吧！": "voices/bobbybearhug-hello.mp3",
+  "谢谢你，送你一个大大的小熊抱！": "voices/bobbybearhug-thanks.mp3",
+  "大冒险把我弄得脏兮兮的。帮我恢复精神吧！": "voices/kickinchicken-hello.mp3",
+  "修得太棒啦！你就是今天的小明星！": "voices/kickinchicken-thanks.mp3",
+  "你好呀！我是你的微笑小伙伴。我们一起，把爱和温暖缝进小小的补丁里吧！": "voices/preview.mp3",
+  "我已经修好啦！现在送我一颗唤醒爱心吧。": "voices/heart-ready.mp3"
+};

@@ -14,7 +14,7 @@ fs.mkdirSync(out, {recursive: true});
   // Cover every optional repair for each rig; reduce only rendering resolution.
   source=source.replace('.slice(0, 3);','.slice(0, 5);')
     .replace('renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));','renderer.setPixelRatio(.5);');
-  source+=`\nwindow.__VOICE_TEST__ = () => {const saved = voiceChoices; voiceChoices = [{name:'Google US English',lang:'en-US'}, {name:'Tingting',lang:'zh-CN'}, {name:'Microsoft Xiaoyi Online (Natural)',lang:'zh-CN'}, {name:'Sinji',lang:'zh-HK'}]; const chosen=gentleVoice();voiceChoices=saved;return chosen.name;};\nwindow.__PLAYTEST__ = async () => {
+  source+=`\nwindow.__VOICE_STATE__ = () => spokenClip && ({paused:spokenClip.paused,time:spokenClip.currentTime,src:spokenClip.src});\nwindow.__AUDIO_CHECK__ = async () => { const results=[];for(const [text,src] of Object.entries(VOICE_CLIPS)){const a=new Audio(src);await new Promise((resolve,reject)=>{a.onloadedmetadata=resolve;a.onerror=()=>reject(new Error('Bad audio: '+src));});results.push({src,duration:a.duration});}return results;};\nwindow.__VOICE_TEST__ = () => {const saved = voiceChoices; voiceChoices = [{name:'Google US English',lang:'en-US'}, {name:'Tingting',lang:'zh-CN'}, {name:'Microsoft Xiaoyi Online (Natural)',lang:'zh-CN'}, {name:'Sinji',lang:'zh-HK'}]; const chosen=gentleVoice();voiceChoices=saved;return chosen.name;};\nwindow.__PLAYTEST__ = async () => {
    const log=[];
    for(let step=0;step<100 && game.damages.some(d=>!d.done);step++) {
     const d=game.damages.find(d=>!d.done); findDamage(d.type);
@@ -40,13 +40,13 @@ fs.mkdirSync(out, {recursive: true});
  await page.addInitScript(()=>{window.__spoken=[]; speechSynthesis.speak=(u)=>{window.__spoken.push({text:u.text,lang:u.lang});};});
  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:8765');await page.waitForFunction(()=>window.__REPAIR3D__);
  assert.equal(await page.evaluate(()=>__VOICE_TEST__()),'Microsoft Xiaoyi Online (Natural)');
- if(process.env.VOICE_ONLY){
-  await page.click('#voicePreviewBtn');
-  console.log('Mandarin voice preference and preview control PASS');
-  await browser.close(); return;
- }
+ const recordings=await page.evaluate(()=>__AUDIO_CHECK__());assert.equal(recordings.length,24);
+ for(const r of recordings)assert(r.duration>1 && r.duration<20,r.src);
  await page.click('#voicePreviewBtn');
- const preview=await page.evaluate(()=>__spoken.at(-1));assert.match(preview.text,/你好/);assert.match(preview.lang,/^(zh|cmn)/i);
+ await page.waitForFunction(()=>__VOICE_STATE__()?.time>0.2);
+ assert.equal(await page.evaluate(()=>__VOICE_STATE__().paused),false);
+ console.log('All 24 Mandarin MP3 recordings decoded; preview playback PASS');
+ if(process.env.VOICE_ONLY){await browser.close();return;}
  assert.equal(await page.locator('html').getAttribute('lang'),'zh-CN');
  const ids=await page.evaluate(()=>__REPAIR3D__.characters());assert.equal(ids.length,11);
  const visitIds=process.env.CRITTERS ? process.env.CRITTERS.split(',') : ids;

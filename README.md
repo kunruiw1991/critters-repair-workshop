@@ -28,7 +28,7 @@ Inspired by doll-restoration videos, with only the gentle, satisfying parts kept
 - After the repairs, the **stethoscope** appears: tap the three pink rings for a gentle head, tummy, and paw checkup, then give the wind-up heart.
 - Wrong tool? The critter gives a friendly hint and the right tool wiggles.
 - Dress-up (bow, flowers, party hat, scarf, star), then the critter hops onto the **Happy Shelf**. Before/after photo card. Shelf and stars are saved on the device.
-- Interface and dialogue are in simplified Chinese. **试听中文声音** previews Mandarin device speech; this fallback is not Luo Tianyi. Licensed exported recordings can be mapped by exact dialogue text in `js/voices/manifest.js`. No Luo Tianyi recordings are bundled.
+- Interface and dialogue are in simplified Chinese. All 24 spoken lines are bundled as MP3 recordings using the lively Mandarin Xiaoyi synthetic voice, so playback does not depend on installed device voices. **试听中文声音** previews the same voice. Device speech is used only if a recording fails. This is not Luo Tianyi.
 - Slow, calm motion; ⏸ pause and ⏹ stop are always available.
 
 ## Tech

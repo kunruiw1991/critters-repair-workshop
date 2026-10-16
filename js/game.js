@@ -447,8 +447,7 @@ function rubSfx(tool) {
   if (tool === 'sponge') { noise(850, 1.3, .05, .16); if (Math.random() < .4) tone(rnd(500, 800), 1000, .08, .03); }
   if (tool === 'cloth') { noise(4200, 2, .025, .1); if (Math.random() < .3) tone(1760, 2200, .18, .018); }
 }
-// Mandarin device speech is a temporary fallback, not Luo Tianyi's voice.
-// Licensed recorded clips can replace individual lines through voices/manifest.js.
+// Bundled Xiaoyi Mandarin audio plays on every device; device speech is a fallback.
 let voiceChoices = [];
 function refreshVoices() {
   if ('speechSynthesis' in window) voiceChoices = speechSynthesis.getVoices();
@@ -478,9 +477,15 @@ function say(text) {
   const clip = VOICE_CLIPS[text];
   if (clip) {
     spokenClip = new Audio(clip); spokenClip.volume = .8;
-    spokenClip.play().catch(() => { /* Missing recordings keep the visible dialogue readable. */ });
+    const currentClip = spokenClip;
+    spokenClip.play().catch(() => {
+      if (spokenClip === currentClip && soundOn && !game.paused) { spokenClip = null; speakDevice(text); }
+    });
     return;
   }
+  speakDevice(text);
+}
+function speakDevice(text) {
   if (!('speechSynthesis' in window)) return;
   const u = new SpeechSynthesisUtterance(text); u.rate = .95; u.pitch = 1.15; u.volume = .8;
   refreshVoices(); const voice = gentleVoice();
