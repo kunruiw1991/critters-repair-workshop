@@ -1,9 +1,11 @@
-// Critter Repair Workshop 3D: free-order plush repair clinic for LunaBat (Chuyu), SunnyFox (Mom), PoppyDash (Dad).
+// Critter Repair Workshop 3D: family plush friends and eight library Smiling Critters.
 // Mechanics adapted (kid-safe) from doll-restoration ASMR videos: pluck debris, scrub/sand grime, airbrush color back,
 // pop a new eye in, re-attach a limb, stuff & stitch, polish, then a wind-up heart brings the critter to life.
 
+import { VOICE_CLIPS } from './voices/manifest.js';
 import { buildSunnyFox } from './characters/SunnyFox.js';
 import { buildLunaBat } from './characters/LunaBat.js';
+import { buildSmilingCritter, SMILING_CRITTERS } from './characters/SmilingCritters.js';
 import { buildPoppyDash } from './characters/PoppyDash.js';
 
 const THREE = window.THREE;
@@ -16,59 +18,82 @@ const ease = (t) => 1 - Math.pow(1 - clamp01(t), 3);
 /* ============================== Data ============================== */
 const CRITTERS = {
   lunabat: {
-    name: 'LunaBat', who: 'Chuyu', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
+    name: 'LunaBat', who: '你的伙伴', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
     thread: '#c9a8f2', pendantKey: 'moonStarPendant', pendantIcon: '🌙', earSide: 'leftEar',
-    hello: 'Oh no! I got all messy flying through the forest. Can you fix me?',
-    thanks: 'I feel brand new! Let\u2019s fly to the moon together, Chuyu!'
+    hello: '哎呀，飞过森林的时候，我弄得脏兮兮的。帮我修好吧！',
+    thanks: '我又变得软乎乎啦！我们一起飞向月亮吧！'
   },
   sunnyfox: {
-    name: 'SunnyFox', who: 'Mom', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
+    name: 'SunnyFox', who: '妈妈的伙伴', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
     thread: '#f07c78', pendantKey: 'lanternPendant', pendantIcon: '🏮', earSide: 'rightEar',
-    hello: 'My lantern went dim on the muddy trail\u2026 can you help Mommy?',
-    thanks: 'My lantern is glowing again! Thank you for taking care of Mommy, Chuyu!'
+    hello: '走过泥泞小路，我的小灯笼不亮了。帮帮妈妈的伙伴吧！',
+    thanks: '小灯笼又亮起来啦！谢谢你这么细心地照顾我！'
   },
   poppydash: {
-    name: 'PoppyDash', who: 'Dad', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
+    name: 'PoppyDash', who: '爸爸的伙伴', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
     thread: '#f2c14e', pendantKey: 'popcornPendant', pendantIcon: '🍿', earSide: 'rightEar',
-    hello: 'I ran so fast I tumbled into a puddle! Can you patch up Daddy?',
-    thanks: 'Fluffy again! Ready to run and share popcorn. Thanks, Chuyu!'
+    hello: '我跑得太快，扑通一下掉进了水坑！帮爸爸的伙伴补一补吧！',
+    thanks: '又变得蓬松啦！谢谢你，我们一起跑步、分享爆米花吧！'
   }
 };
 
+const FRIEND_STORIES = {
+  dogday: ['阳光伙伴', '☀️', '我在阳光小路上发现了一个大泥坑！帮我变干净，好吗？', '你让今天更闪亮了！送你一个暖暖的拥抱！'],
+  catnap: ['月光伙伴', '🌙', '我的小窝落满了灰尘和蜘蛛网。帮我变回软乎乎的样子吧！', '好柔软，好舒服！谢谢你，祝你做个甜甜的梦！'],
+  hoppyhopscotch: ['蹦跳伙伴', '⚡', '我一下跳进了小灌木丛！帮我修好，我们再一起蹦蹦跳！', '跳一跳，真开心！你是最棒的小伙伴！'],
+  bubbabubbaphant: ['聪明伙伴', '💡', '探险时，我的绒毛打结了。我们一起想办法吧！', '这个办法真聪明！送你一个大大的象象抱！'],
+  craftycorn: ['绘画伙伴', '🌼', '画画的时候，我把绒毛弄乱了。帮帮我，好吗？', '这个补丁真漂亮！你是一位小小艺术家！'],
+  pickypiggy: ['野餐伙伴', '🍎', '野餐真好玩，可是我弄得满身都是泥。帮我洗干净吧！', '又变得香香软软啦！我们一起分享小苹果吧！'],
+  bobbybearhug: ['拥抱伙伴', '❤️', '我抱了好多朋友，缝线都松开了！帮我缝好吧！', '谢谢你，送你一个大大的小熊抱！'],
+  kickinchicken: ['活力伙伴', '⭐', '大冒险把我弄得脏兮兮的。帮我恢复精神吧！', '修得太棒啦！你就是今天的小明星！']
+};
+for (const [id, cfg] of Object.entries(SMILING_CRITTERS)) {
+  const [who, pendantIcon, hello, thanks] = FRIEND_STORIES[id];
+  CRITTERS[id] = {name: cfg.name, who, icon: `icons/${cfg.ref}`, build: () => buildSmilingCritter(id),
+    fur: cfg.fur, thread: cfg.accent, pendantKey: 'smilingPendant', pendantIcon, earSide: 'leftEar', hello, thanks};
+}
+
 const TOOLS = [
-  { id: 'brush', icon: '🧹', name: 'Brush', hold: true },
-  { id: 'sponge', icon: '🧽', name: 'Sponge', hold: true },
-  { id: 'dryer', icon: '💨', name: 'Dryer', hold: true },
-  { id: 'tweezers', icon: '🥢', name: 'Tweezers' },
-  { id: 'needle', icon: '🪡', name: 'Needle' },
-  { id: 'button', icon: '🔘', name: 'Button eye' },
-  { id: 'cotton', icon: '☁️', name: 'Stuffing' },
-  { id: 'paint', icon: '🖌️', name: 'Color spray', hold: true },
-  { id: 'cloth', icon: '🧤', name: 'Polish', hold: true },
-  { id: 'heart', icon: '💝', name: 'Wind-up heart' }
+  { id: 'brush', icon: '🧹', name: '小刷子', hold: true },
+  { id: 'sponge', icon: '🧽', name: '小海绵', hold: true },
+  { id: 'dryer', icon: '💨', name: '吹风机', hold: true },
+  { id: 'tweezers', icon: '🥢', name: '小镊子' },
+  { id: 'needle', icon: '🪡', name: '缝缝针' },
+  { id: 'button', icon: '🔘', name: '纽扣眼睛' },
+  { id: 'cotton', icon: '☁️', name: '蓬松棉花' },
+  { id: 'paint', icon: '🖌️', name: '彩色喷笔', hold: true },
+  { id: 'cloth', icon: '🧤', name: '擦亮手套', hold: true },
+  { id: 'comb', icon: '🪮', name: '绒毛梳', hold: true },
+  { id: 'patch', icon: '🩹', name: '暖心补丁' },
+  { id: 'checkup', icon: '🩺', name: '抱抱检查' },
+  { id: 'heart', icon: '💝', name: '唤醒爱心' }
 ];
 const TOOL = Object.fromEntries(TOOLS.map((t) => [t.id, t]));
 
 const DMG = {
-  dust:    { icon: '🕸️', tool: 'brush',    label: 'Dusty fluff' },
-  mud:     { icon: '🟤', tool: 'sponge',   label: 'Mud splats' },
-  wet:     { icon: '💧', tool: 'dryer',    label: 'Wet spots' },
-  burr:    { icon: '🌰', tool: 'tweezers', label: 'Sticky burrs' },
-  tear:    { icon: '🧵', tool: 'needle',   label: 'Torn seams' },
-  ear:     { icon: '👂', tool: 'needle',   label: 'Loose ear' },
-  eye:     { icon: '👁️', tool: 'button',   label: 'Lost eye' },
-  flat:    { icon: '🎈', tool: 'cotton',   label: 'Flat & floppy' },
-  faded:   { icon: '🩶', tool: 'paint',    label: 'Faded colors' },
-  pendant: { icon: '💎', tool: 'cloth',    label: 'Dull pendant' }
+  tangle:  { icon: '🪮', tool: 'comb', label: '打结的绒毛' },
+  patch:   { icon: '🩹', tool: 'patch', label: '磨破的布料' },
+  checkup: { icon: '🩺', tool: 'checkup', label: '抱抱检查' },
+  dust:    { icon: '🕸️', tool: 'brush',    label: '灰尘和蛛网' },
+  mud:     { icon: '🟤', tool: 'sponge',   label: '脏脏的泥巴' },
+  wet:     { icon: '💧', tool: 'dryer',    label: '湿湿的水滴' },
+  burr:    { icon: '🌰', tool: 'tweezers', label: '粘人的小刺球' },
+  tear:    { icon: '🧵', tool: 'needle',   label: '松开的缝线' },
+  ear:     { icon: '👂', tool: 'needle',   label: '松开的耳朵' },
+  eye:     { icon: '👁️', tool: 'button',   label: '掉落的眼睛' },
+  flat:    { icon: '🎈', tool: 'cotton',   label: '扁扁的身体' },
+  faded:   { icon: '🩶', tool: 'paint',    label: '褪色的绒毛' },
+  pendant: { icon: '💎', tool: 'cloth',    label: '暗暗的小挂饰' }
 };
-const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant'];
+const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant', 'tangle', 'patch', 'checkup'];
 
-const CHEERS = ['Ahh, much better!', 'Yay! Thank you!', 'That feels so nice!', 'Wheee!', 'You\u2019re the best fixer!', 'Ooh, sparkly!'];
-const TICKLES = ['Hee hee, that tickles!', 'Hi Chuyu!', 'Boop!', 'Giggle giggle!'];
+const CHEERS = ['啊，好多啦！', '耶，谢谢你！', '这样好舒服呀！', '好开心！', '你是最棒的小修理师！', '哇，亮晶晶！'];
+const TICKLES = ['嘻嘻，好痒呀！', '你好，小伙伴！', '啵！', '咯咯咯！'];
 
 /* ============================== Persistence ============================== */
 const SAVE_KEY = 'critterRepair3D_v1';
 const save = Object.assign({ stars: 0, shelf: [], fixed: {} }, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'));
+save.shelf = save.shelf.filter((entry) => CRITTERS[entry.id]);
 const persist = () => localStorage.setItem(SAVE_KEY, JSON.stringify(save));
 
 /* ============================== Renderer & scene ============================== */
@@ -422,10 +447,49 @@ function rubSfx(tool) {
   if (tool === 'sponge') { noise(850, 1.3, .05, .16); if (Math.random() < .4) tone(rnd(500, 800), 1000, .08, .03); }
   if (tool === 'cloth') { noise(4200, 2, .025, .1); if (Math.random() < .3) tone(1760, 2200, .18, .018); }
 }
+// Bundled Xiaoyi Mandarin audio plays on every device; device speech is a fallback.
+let voiceChoices = [];
+function refreshVoices() {
+  if ('speechSynthesis' in window) voiceChoices = speechSynthesis.getVoices();
+}
+if ('speechSynthesis' in window) {
+  refreshVoices(); speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+}
+function gentleVoice() {
+  const mandarin = voiceChoices.filter((v) => /^(zh|cmn)(?:-|_|$)/i.test(v.lang) && !/^zh[-_]HK/i.test(v.lang));
+  const preferred = ['Xiaoyi', 'Xiaoxiao', 'HsiaoChen', 'HsiaoYu', 'Google 普通话', 'Tingting', 'Meijia'];
+  const score = (v) => {
+    const rank = preferred.findIndex((name) => v.name.toLowerCase().includes(name.toLowerCase()));
+    return (rank < 0 ? 0 : (preferred.length - rank) * 100)
+      + (/natural|premium|enhanced|neural/i.test(v.name) ? 30 : 0)
+      + (/^(zh[-_]CN|cmn[-_]Hans[-_]CN)$/i.test(v.lang) ? 10 : 0);
+  };
+  return mandarin.sort((a, b) => score(b) - score(a))[0];
+}
+let spokenClip = null;
+function stopSpeech() {
+  if (spokenClip) { spokenClip.pause(); spokenClip = null; }
+  if ('speechSynthesis' in window) { speechSynthesis.cancel(); speechSynthesis.resume(); }
+}
 function say(text) {
-  if (!soundOn || !('speechSynthesis' in window) || !text) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text); u.rate = .9; u.pitch = 1.2; u.lang = 'en-US';
+  if (!soundOn || !text || game.paused) return;
+  stopSpeech();
+  const clip = VOICE_CLIPS[text];
+  if (clip) {
+    spokenClip = new Audio(clip); spokenClip.volume = .8;
+    const currentClip = spokenClip;
+    spokenClip.play().catch(() => {
+      if (spokenClip === currentClip && soundOn && !game.paused) { spokenClip = null; speakDevice(text); }
+    });
+    return;
+  }
+  speakDevice(text);
+}
+function speakDevice(text) {
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text); u.rate = .95; u.pitch = 1.15; u.volume = .8;
+  refreshVoices(); const voice = gentleVoice();
+  if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'zh-CN';
   speechSynthesis.speak(u);
 }
 
@@ -496,7 +560,18 @@ const M = {
 };
 function makeDecal(type) {
   const g = new THREE.Group();
-  if (type === 'mud') {
+  if (type === 'tangle') {
+    const mat = std({color: game.meta.thread, roughness: 1});
+    for (let i = 0; i < 5; i++) {
+      const loop = new THREE.Mesh(new THREE.TorusGeometry(.045, .013, 8, 16, Math.PI * 1.7), mat);
+      loop.position.set((i - 2) * .035, Math.sin(i * 2) * .025, .02 + i * .005);
+      loop.rotation.z = i * 1.3; g.add(loop);
+    }
+  } else if (type === 'patch') {
+    const hole = new THREE.Mesh(new THREE.CircleGeometry(.10, 24), M.slit); g.add(hole);
+    const backing = new THREE.Mesh(new THREE.CircleGeometry(.085, 24), M.cottonM);
+    backing.position.z = .004; g.add(backing); g.userData.presses = 0;
+  } else if (type === 'mud') {
     for (let i = 0; i < 4; i++) {
       const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.045, .085), 20, 14), i ? M.mud : M.mud2);
       b.scale.z = .22; b.position.set(rnd(-.06, .06), rnd(-.05, .05), .005 * i); g.add(b);
@@ -584,6 +659,7 @@ function makeSocket(eyeGroup) {
 
 /* ============================== Visit lifecycle ============================== */
 function clearCritter() {
+  game.visitVersion = (game.visitVersion || 0) + 1;
   if (game.critter) { game.critter.parent && game.critter.parent.remove(game.critter); }
   if (game.ear && game.ear.obj.parent === scene) scene.remove(game.ear.obj);
   game.critter = null; game.damages = []; game.ear = null; game.eye = null; game.pend = null; game.fadedMats = null;
@@ -602,17 +678,22 @@ function startVisit() {
   game.meta = CRITTERS[id];
   const c = buildCritter(id);
   c.position.y = .97; holder.add(c); holder.rotation.y = 0; turntable.rotation.y = 0;
-  game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0;
+  game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0; game.checkupStarted = false;
   c.updateMatrixWorld(true);
 
   // Pick a random set of damages: every visit is different.
   const optional = ['eye', 'ear', 'flat', 'faded', 'pendant'].sort(() => Math.random() - .5).slice(0, 3);
+  // Keep surface repairs on the plush while a loose ear is waiting on the table.
+  if (optional.includes('ear')) c.parts[game.meta.earSide].traverse((o) => { o.userData.noDecal = true; });
   const counts = { mud: 2 + (Math.random() < .5), dust: 2 + (Math.random() < .4), burr: 1 + (Math.random() < .5), tear: 1 + (Math.random() < .35) };
+  surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('tangle', h));
+  surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('patch', h));
   // Surface decals (tears biased to the front so they are easy to find).
   surfaceHits(c, counts.tear, .35, 'front').forEach((h) => addDamage('tear', h));
   surfaceHits(c, counts.mud, .3).forEach((h) => addDamage('mud', h));
   surfaceHits(c, counts.dust, .3).forEach((h) => addDamage('dust', h));
   surfaceHits(c, counts.burr, .28).forEach((h) => addDamage('burr', h));
+
 
   if (optional.includes('eye')) {
     const eyes = c.parts.eyes, side = pick(['leftEye', 'rightEye']);
@@ -646,18 +727,19 @@ function startVisit() {
   $('home').classList.add('hidden');
   ['ticket', 'toolbox', 'turn', 'pauseBtn', 'stopBtn'].forEach((id2) => $(id2).classList.remove('hidden'));
   $('dress').classList.add('hidden');
-  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = game.meta.who === 'Chuyu' ? 'Chuyu\u2019s critter' : `${game.meta.who}\u2019s critter`;
+  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = game.meta.who;
   selectTool(null);
   renderTools(); renderTicket();
-  setTimeout(() => { bubble(game.meta.hello, 4200); say(game.meta.hello); }, 1300);
-  setTimeout(() => { renderer.render(scene, camera); game.before = canvas.toDataURL('image/jpeg', .85); }, 1900);
+  const visitVersion = game.visitVersion;
+  setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; bubble(game.meta.hello, 4200); say(game.meta.hello); }, 1300);
+  setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; renderer.render(scene, camera); game.before = canvas.toDataURL('image/jpeg', .85); }, 1900);
 }
 
 /* ============================== HUD ============================== */
 function renderTools() {
   const allFixed = game.state === 'repair' && game.damages.every((d) => d.done);
-  $('tools').innerHTML = TOOLS.filter((t) => t.id !== 'heart' || allFixed).map((t) =>
-    `<div class="tool ${game.tool === t.id ? 'sel' : ''} ${t.id === 'heart' ? 'heart glow' : ''}" data-t="${t.id}"><div class="face">${t.icon}</div><span>${t.name}</span></div>`).join('');
+  $('tools').innerHTML = TOOLS.filter((t) => (t.id !== 'heart' || allFixed) && (t.id !== 'checkup' || game.checkupStarted)).map((t) =>
+    `<button type="button" class="tool ${game.tool === t.id ? 'sel' : ''} ${t.id === 'heart' ? 'heart glow' : ''}" data-t="${t.id}"><div class="face">${t.icon}</div><span>${t.name}</span></button>`).join('');
   $('tools').querySelectorAll('.tool').forEach((el) => el.onclick = () => { selectTool(game.tool === el.dataset.t ? null : el.dataset.t); tone(620, 780, .1, .03); });
 }
 function selectTool(id) {
@@ -693,7 +775,7 @@ function findDamage(type) {
     game.spinTo = turntable.rotation.y + delta;
     setTimeout(() => { const pos = d.anchor.getWorldPosition(new THREE.Vector3()); burst(pos, 6); }, 900);
   }
-  bubble(`Try the ${TOOL[DMG[type].tool].icon} ${TOOL[DMG[type].tool].name}!`, 2200);
+  bubble(`试试 ${TOOL[DMG[type].tool].icon} ${TOOL[DMG[type].tool].name} 吧！`, 2200);
 }
 let bubbleTimer = 0;
 function bubble(text, ms = 2400) {
@@ -739,14 +821,29 @@ function hitCritter(x, y) {
   return raycaster.intersectObject(game.critter, true)[0] || null;
 }
 function fixed(d, where) {
+  if (d.done) return;
   d.done = true; game.fixedCount++;
   addStars(1, where);
   chime([659, 784, 988]);
   if (Math.random() < .7) bubble(pick(CHEERS), 1800);
   renderTicket();
   if (game.damages.every((x) => x.done)) {
+    if (!game.checkupStarted) {
+      game.checkupStarted = true;
+      ['head', 'torso', 'leftLeg'].forEach((part) => {
+        const marker = new THREE.Group(); marker.position.set(0, 0, part === 'head' ? .52 : .4);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(.065, .013, 8, 24), std({color: '#ff96bd', emissive: '#ff96bd', emissiveIntensity: .3}));
+        marker.add(ring); game.critter.parts[part].add(marker);
+        game.damages.push({type: 'checkup', anchor: marker, hp: 1, done: false, id: game.damages.length});
+      });
+      game.spinTo = Math.round(turntable.rotation.y / (Math.PI * 2)) * Math.PI * 2;
+      renderTicket(); renderTools(); selectTool('checkup');
+      bubble('最后做个抱抱检查吧！用听诊器点一点三个粉色小圈圈。🩺', 5000);
+      return;
+    }
     renderTools();
-    setTimeout(() => { bubble('I\u2019m all fixed\u2026 but I\u2019m still sleepy. Give me the wind-up heart! 💝', 4200); say('I am all fixed! Now give me the wind-up heart.'); }, 900);
+    const visitVersion = game.visitVersion;
+    setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; bubble('我已经修好啦，不过还有点困。送我一颗唤醒爱心吧！💝', 4200); say('我已经修好啦！现在送我一颗唤醒爱心吧。'); }, 900);
   }
 }
 function removeDecal(d, flyTo) {
@@ -793,7 +890,7 @@ function holdTool(x, y, dt) {
     }
     return;
   }
-  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet' }[t];
+  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet', comb: 'tangle' }[t];
   if (!type) return;
   if (t === 'dryer') loopNoise('dryer', true, 650, 'lowpass', .045); else rubSfx(t);
   const d = nearestDamage(x, y, [type], 95);
@@ -802,16 +899,16 @@ function holdTool(x, y, dt) {
   const p = d.anchor.getWorldPosition(new THREE.Vector3());
   d.anchor.scale.setScalar(.35 + .65 * Math.max(0, d.hp));
   if (t === 'sponge' && Math.random() < .25) spawn(TEX.bubble, p.clone().add(new THREE.Vector3(rnd(-.08, .08), rnd(-.02, .06), .06)), { vel: new THREE.Vector3(rnd(-.05, .05), rnd(.12, .25), rnd(-.02, .05)), life: rnd(1.8, 2.8), size: rnd(.05, .09), grow: .3 });
-  if (t === 'brush' && Math.random() < .18) spawn(TEX.puff, p.clone(), { vel: new THREE.Vector3(rnd(-.25, .25), rnd(.05, .2), .15), life: 1.6, size: .1, grow: .8, opacity: .8 });
+  if ((t === 'brush' || t === 'comb') && Math.random() < .18) spawn(TEX.puff, p.clone(), { vel: new THREE.Vector3(rnd(-.25, .25), rnd(.05, .2), .15), life: 1.6, size: .1, grow: .8, opacity: .8 });
   if (t === 'dryer' && Math.random() < .2) spawn(TEX.soft, p.clone(), { vel: new THREE.Vector3(rnd(-.1, .1), .3, .1), life: 1.2, size: .08, grow: 1.5, opacity: .35 });
   if (d.hp <= 0) {
     removeDecal(d);
-    fixed(d, p);
     if (type === 'mud') {
       // Washing leaves the fur wet: new drops appear to dry (a tiny chain reaction).
       const hit = { point: p, normal: tmpV2.set(0, 0, 1).applyQuaternion(d.anchor.getWorldQuaternion(tmpQ)).clone(), object: d.anchor.parent || game.critter };
       if (hit.object && hit.object !== scene) { const w = addDamage('wet', hit); w.anchor.scale.setScalar(.9); game.total++; renderTicket(); }
     }
+    fixed(d, p);
   }
 }
 // Tap tools.
@@ -820,6 +917,31 @@ function tapTool(x, y) {
   if (t === 'heart') {
     if (hit && game.damages.every((d) => d.done) && !game.heartIn) wakeUp(hit.point);
     return true;
+  }
+  if (t === 'checkup') {
+    const d = nearestDamage(x, y, ['checkup'], 70);
+    if (d) {
+      const pos = d.anchor.getWorldPosition(new THREE.Vector3());
+      burst(pos, 8, TEX.heart); removeDecal(d); fixed(d, pos);
+      if (game.damages.some((q) => q.type === 'checkup' && !q.done)) bubble('软软的，暖暖的，可以抱抱啦！💗', 1800);
+      return true;
+    }
+  }
+  if (t === 'patch') {
+    const d = nearestDamage(x, y, ['patch'], 85);
+    if (d) {
+      const g = d.anchor, n = ++g.userData.presses;
+      if (n === 1) {
+        const patch = new THREE.Mesh(new THREE.CircleGeometry(.105, 5), std({color: game.meta.thread, roughness: .9}));
+        patch.position.z = .012; g.add(patch);
+        bubble('暖心补丁贴上啦！再按两下，让它更牢固。🩹', 2400);
+      }
+      const stitch = new THREE.Mesh(new THREE.TorusGeometry(.082, .006, 6, 24, Math.PI * 2 / 3), M.cottonM);
+      stitch.position.z = .018; stitch.rotation.z = (n - 1) * Math.PI * 2 / 3; g.add(stitch);
+      tone(520 + n * 110, 760 + n * 110, .12, .04);
+      if (n >= 3) fixed(d, g.getWorldPosition(new THREE.Vector3()));
+      return true;
+    }
   }
   if (t === 'tweezers') {
     const d = nearestDamage(x, y, ['burr']);
@@ -879,7 +1001,7 @@ function wrongToolHint(x, y) {
   if (need && need !== game.tool) {
     const el = document.querySelector(`#tools .tool[data-t="${need}"]`);
     if (el) { el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); }
-    bubble(`Hmm\u2026 maybe the ${TOOL[need].icon} ${TOOL[need].name}?`, 2000); tone(330, 300, .15, .03);
+    bubble(`嗯，试试 ${TOOL[need].icon} ${TOOL[need].name} 好吗？`, 2000); tone(330, 300, .15, .03);
     return true;
   }
   return false;
@@ -944,7 +1066,7 @@ function makeAccessory(kind) {
   g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   return g;
 }
-const DRESS = [['bow', '🎀', 'Bow'], ['crown', '🌼', 'Flowers'], ['hat', '🥳', 'Party hat'], ['scarf', '🧣', 'Scarf'], ['star', '⭐', 'Star clip']];
+const DRESS = [['bow', '🎀', '蝴蝶结'], ['crown', '🌼', '小花环'], ['hat', '🥳', '派对帽'], ['scarf', '🧣', '小围巾'], ['star', '⭐', '星星夹']];
 function showDress() {
   $('toolbox').classList.add('hidden'); $('dress').classList.remove('hidden');
   $('dressItems').innerHTML = DRESS.map(([k, i, n]) => `<div class="tool" data-k="${k}"><div class="face">${i}</div><span>${n}</span></div>`).join('');
@@ -989,9 +1111,9 @@ function goToShelf() {
 }
 function showCard(after) {
   const v = $('endVeil');
-  v.innerHTML = `<div class="card glass"><h2>${game.meta.name} is all better!</h2><p>${game.meta.thanks}</p>
-    <div class="ba"><figure><img src="${game.before || after}" alt="before"><figcaption>Before</figcaption></figure><figure><img src="${after}" alt="after"><figcaption>After</figcaption></figure></div>
-    <div class="btnrow"><button class="cta small" id="nextBtn">🧸 Fix another friend</button><button class="ghost" id="saveBtn">📸 Save photo</button></div></div>`;
+  v.innerHTML = `<div class="card glass"><h2>${game.meta.name} 修好啦！</h2><p>${game.meta.thanks}</p>
+    <div class="ba"><figure><img src="${game.before || after}" alt="before"><figcaption>修理前</figcaption></figure><figure><img src="${after}" alt="after"><figcaption>修理后</figcaption></figure></div>
+    <div class="btnrow"><button class="cta small" id="nextBtn">🧸 再帮一个伙伴</button><button class="ghost" id="saveBtn">📸 保存照片</button></div></div>`;
   v.classList.remove('hidden');
   $('nextBtn').onclick = () => { v.classList.add('hidden'); goHome(); };
   $('saveBtn').onclick = () => { const a = document.createElement('a'); a.download = `${game.meta.name}-repaired.jpg`; a.href = after; a.click(); };
@@ -999,11 +1121,12 @@ function showCard(after) {
 
 /* ============================== Home ============================== */
 function renderPatients() {
-  $('patients').innerHTML = Object.entries(CRITTERS).map(([k, c]) => `<div class="patient ${k === game.sel ? 'sel' : ''}" data-k="${k}">
-    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span><div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></div>`).join('');
+  $('patients').innerHTML = Object.entries(CRITTERS).map(([k, c]) => `<button type="button" class="patient ${k === game.sel ? 'sel' : ''}" data-k="${k}">
+    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span><div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></button>`).join('');
   $('patients').querySelectorAll('.patient').forEach((el) => el.onclick = () => { game.sel = el.dataset.k; tone(600, 760, .12, .03); renderPatients(); previewCritter(game.sel); });
 }
 function goHome() {
+  stopSpeech();
   game.state = 'home'; game.paused = false;
   ['ticket', 'toolbox', 'turn', 'dress', 'pauseBtn', 'stopBtn', 'pauseVeil', 'endVeil', 'bubble'].forEach((id) => $(id).classList.add('hidden'));
   $('home').classList.remove('hidden');
@@ -1029,7 +1152,7 @@ canvas.addEventListener('pointerdown', (e) => {
   if (game.state === 'repair' && t && (onCritter || onEar || nearDamage)) {
     if (TOOL[t].hold) {
       pointer.mode = 'hold';
-      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded' }[t];
+      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded', comb: 'tangle' }[t];
       const any = game.damages.some((d) => !d.done && d.type === matches);
       if (!any || (nearDamage && DMG[nearDamage.type].tool !== t && !['paint'].includes(t))) wrongToolHint(e.clientX, e.clientY);
     } else {
@@ -1061,16 +1184,17 @@ function moveCursor(e) {
 $('rotL').onclick = () => { game.spinTo = turntable.rotation.y - Math.PI / 3; tone(500, 600, .1, .03); };
 $('rotR').onclick = () => { game.spinTo = turntable.rotation.y + Math.PI / 3; tone(500, 600, .1, .03); };
 $('zoomBtn').onclick = () => setCam(camMode === 'near' ? 'far' : 'near');
+$('voicePreviewBtn').onclick = () => say('你好呀！我是你的微笑小伙伴。我们一起，把爱和温暖缝进小小的补丁里吧！');
 $('startBtn').onclick = () => { music.started = true; startVisit(); };
 $('stopBtn').onclick = goHome;
 $('pauseBtn').onclick = () => setPaused(!game.paused);
 $('resumeBtn').onclick = () => setPaused(false);
 $('shelfBtn').onclick = goToShelf;
 $('musicBtn').onclick = () => { music.started = true; music.toggle(); };
-$('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').classList.toggle('off', !soundOn); if (!soundOn) { Object.keys(loops).forEach((k) => loopNoise(k, false)); if ('speechSynthesis' in window) speechSynthesis.cancel(); } };
+$('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').classList.toggle('off', !soundOn); if (!soundOn) { Object.keys(loops).forEach((k) => loopNoise(k, false)); stopSpeech(); } };
 function setPaused(p) {
   game.paused = p; $('pauseVeil').classList.toggle('hidden', !p); $('pauseBtn').textContent = p ? '▶' : '⏸';
-  if (p) { endPointer(); Object.values(music.tracks).forEach((a) => a.pause()); } else { const c = music.cur; music.cur = null; music.play(c || 'theme'); }
+  if (p) { if (spokenClip) spokenClip.pause(); if ('speechSynthesis' in window) speechSynthesis.pause(); endPointer(); Object.values(music.tracks).forEach((a) => a.pause()); } else { if (spokenClip) spokenClip.play().catch(() => {}); if ('speechSynthesis' in window) speechSynthesis.resume(); const c = music.cur; music.cur = null; music.play(c || 'theme'); }
 }
 
 /* ============================== Animation loop ============================== */
@@ -1164,6 +1288,7 @@ requestAnimationFrame(frame);
 
 /* ============================== Test hooks ============================== */
 window.__REPAIR3D__ = {
+  characters: () => Object.keys(CRITTERS),
   get state() { return game.state; },
   get tool() { return game.tool; },
   damages: () => game.damages.map((d) => ({ type: d.type, done: d.done })),

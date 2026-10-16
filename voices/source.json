@@ -1,0 +1,10 @@
+{
+  "voice": "zh-CN-XiaoyiNeural",
+  "language": "zh-CN",
+  "rate": "+3%",
+  "pitch": "+3Hz",
+  "type": "synthetic",
+  "generator": "edge-tts 7.3.1",
+  "lines": 24,
+  "description": "Bright, lively Mandarin synthetic voice; not Luo Tianyi."
+}

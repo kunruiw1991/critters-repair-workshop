@@ -1,0 +1,39 @@
+{
+  "repository": "https://github.com/kunruiw1991/smiling-critters-assets",
+  "commit": "9caee635c6fcfefec8c398761bb55f942237dd48",
+  "references": [
+    {
+      "image": "images/008_DogDay_Plushie.webp",
+      "local": "icons/008_DogDay_Plushie.webp"
+    },
+    {
+      "image": "images/022_CatNap_Plushie.webp",
+      "local": "icons/022_CatNap_Plushie.webp"
+    },
+    {
+      "image": "images/012_Hoppy_Hopscotch_Plushie.webp",
+      "local": "icons/012_Hoppy_Hopscotch_Plushie.webp"
+    },
+    {
+      "image": "images/029_Bubba_Bubbaphant_Plushie.webp",
+      "local": "icons/029_Bubba_Bubbaphant_Plushie.webp"
+    },
+    {
+      "image": "images/011_CraftyCorn_Plushie.webp",
+      "local": "icons/011_CraftyCorn_Plushie.webp"
+    },
+    {
+      "image": "images/025_PickyPiggy_Plushie.webp",
+      "local": "icons/025_PickyPiggy_Plushie.webp"
+    },
+    {
+      "image": "images/026_Bobby_BearHug_s_second_cutout_artwork_pose.webp",
+      "local": "icons/026_Bobby_BearHug_s_second_cutout_artwork_pose.webp"
+    },
+    {
+      "image": "images/053_KickinChicken.webp",
+      "local": "icons/053_KickinChicken.webp"
+    }
+  ],
+  "modelNotes": "Procedural 3D plush models matching library colors, wide smiles, silhouettes, and individual pendants. Original reference images are used as selection portraits."
+}
