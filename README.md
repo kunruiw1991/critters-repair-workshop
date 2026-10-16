@@ -11,9 +11,14 @@ Inspired by doll-restoration videos, with only the gentle, satisfying parts kept
 | 🦇 LunaBat | Chuyu |
 | 🦊 SunnyFox | Mom |
 | 🍿 PoppyDash | Dad |
-| 🌸 CloverBunny | Garden friend with long floppy ears |
-| ⭐ PebblePanda | Cozy picnic friend |
-| 🌿 SproutDragon | Little forest dragon with soft wings |
+| ☀️ DogDay | Sunshine friend |
+| 🌙 CatNap | Moonlight friend |
+| ⚡ Hoppy Hopscotch | Bouncy friend |
+| 💡 Bubba Bubbaphant | Clever friend |
+| 🌼 CraftyCorn | Art-loving friend |
+| 🍎 PickyPiggy | Picnic friend |
+| ❤️ Bobby BearHug | Cuddly friend |
+| ⭐ KickinChicken | Cool friend |
 
 ## How it plays
 - Every visit rolls **random damage** on the 3D plush: mud, dust and cobwebs, prickly burrs, torn seams, plus 3 surprise problems (lost button eye, loose ear, flat stuffing, faded colors, dull pendant).
@@ -29,6 +34,7 @@ Inspired by doll-restoration videos, with only the gentle, satisfying parts kept
 ## Tech
 - Three.js r161, no build step, no backend. Open `index.html` from any static host.
 - SunnyFox and LunaBat rigs come from [critters-airplane-3d](https://github.com/kunruiw1991/critters-airplane-3d). PoppyDash is a new rig in the same style.
+- The eight original Smiling Critters are procedural 3D plush models based on [your asset library](https://github.com/kunruiw1991/smiling-critters-assets). Their original library images are the selection portraits. Exact reference paths and source commit are recorded in `icons/smiling-critters-sources.json`.
 - Background music (workshop theme, sewing lullaby, celebration) generated with Lyria; sound effects are synthesized with WebAudio.
 - `tests/make_batch.py` builds a headless gbrowser playthrough that repairs every damage, wakes the critter, dresses it and checks the shelf save.
 
@@ -36,4 +42,4 @@ Inspired by doll-restoration videos, with only the gentle, satisfying parts kept
 
 Serve the repository locally with `python3 -m http.server 8765 --bind 127.0.0.1`.
 With Playwright installed, run `node tests/playthrough.cjs` (set `CHROME_PATH` for another Chrome installation, or `GAME_URL` for another local port).
-The check exercises all six rigs through repairs, checkup, wake-up, dress-up, shelf save/reload, and mobile home/pause/stop controls. Continuous tool frames are accelerated through a test-only intercepted module; the production game does not include those controls.
+The check exercises all eleven rigs through repairs, checkup, wake-up, dress-up, shelf save/reload, and mobile home/pause/stop controls. Continuous tool frames are accelerated through a test-only intercepted module; the production game does not include those controls.

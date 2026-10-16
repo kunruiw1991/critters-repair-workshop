@@ -97,7 +97,7 @@ button{font:inherit;color:inherit;border:none;cursor:pointer}
 
 @media (max-width:900px){#ticket{width:200px;top:80px;padding:12px}.chip{font-size:13px}.tool{width:64px}.tool .face{width:58px;height:58px;font-size:32px}.brand small{display:none}}
 
-/* A six-friend selection and a reachable toolbox on small screens. */
+/* A larger friend selection and a reachable toolbox on small screens. */
 .homecard{max-height:calc(100dvh - 24px);overflow-y:auto}
 .patients{gap:12px}
 .patient{width:180px;font:inherit;color:inherit}
@@ -121,3 +121,16 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
 }
 
 .voice-preview{display:block;margin:12px auto 0;font-size:13px;padding:8px 16px}
+
+/* Room for the complete library roster, with full reference portraits. */
+.homecard{width:min(940px,94vw)}
+.patient{width:152px}
+.patient b{font-size:15px;min-height:36px;display:grid;place-items:center}
+.patient img{object-fit:contain;background:#fff8eb}
+@media(max-width:600px){.patient{width:calc(33.33% - 6px)}.patient b{font-size:11px;min-height:28px}.patient span{font-size:10px}.homecard{max-height:calc(100dvh - 88px);margin-top:52px}}
+
+#home .homecard{display:flex;flex-direction:column;overflow:hidden}
+#home .homecard h1,#home .homecard p,.home-actions{flex-shrink:0}
+#home .patients{min-height:0;overflow-y:auto;align-content:flex-start;padding:4px}
+.home-actions{padding-top:4px}
+.tk-head{min-width:0}.tk-head>div{min-width:0}.tk-head b{overflow-wrap:anywhere}

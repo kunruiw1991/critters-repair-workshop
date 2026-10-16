@@ -1,10 +1,10 @@
-// Critter Repair Workshop 3D: free-order plush repair clinic for LunaBat (Chuyu), SunnyFox (Mom), PoppyDash (Dad).
+// Critter Repair Workshop 3D: family plush friends and eight library Smiling Critters.
 // Mechanics adapted (kid-safe) from doll-restoration ASMR videos: pluck debris, scrub/sand grime, airbrush color back,
 // pop a new eye in, re-attach a limb, stuff & stitch, polish, then a wind-up heart brings the critter to life.
 
 import { buildSunnyFox } from './characters/SunnyFox.js';
 import { buildLunaBat } from './characters/LunaBat.js';
-import { buildMeadowFriend, MEADOW_FRIENDS } from './characters/MeadowFriends.js';
+import { buildSmilingCritter, SMILING_CRITTERS } from './characters/SmilingCritters.js';
 import { buildPoppyDash } from './characters/PoppyDash.js';
 
 const THREE = window.THREE;
@@ -37,14 +37,19 @@ const CRITTERS = {
 };
 
 const FRIEND_STORIES = {
-  cloverbunny: ['Garden friend', '🌸', 'I followed a butterfly through the brambles. Can you fluff me up?', 'My ears are bouncy again! Let’s plant a flower together!'],
-  pebblepanda: ['Picnic friend', '⭐', 'My picnic blanket snagged my fluff. Will you help me feel cozy?', 'You made me feel so cozy! There is a place for you at my picnic!'],
-  sproutdragon: ['Forest friend', '🌿', 'I tried to hug a prickly bush! Can you mend my cuddly scales?', 'My wings feel wonderful! Let’s fly over the treetops!']
+  dogday: ['Sunshine friend', '☀️', 'I found a sunny trail, and a very muddy puddle! Can you help me shine again?', 'You made my day brighter! Time for a sunny cuddle!'],
+  catnap: ['Moonlight friend', '🌙', 'My cozy nap spot was full of dusty cobwebs. Can you make me soft again?', 'So soft and cozy! Thank you, Chuyu. Sweet dreams!'],
+  hoppyhopscotch: ['Bouncy friend', '⚡', 'One big hop landed me in the brambles! Can you get me bouncing again?', 'Hop, hop, hooray! You are a wonderful friend!'],
+  bubbabubbaphant: ['Clever friend', '💡', 'I was exploring when my fluff got tangled. Can we solve this together?', 'What a brilliant repair! A big elephant thank-you!'],
+  craftycorn: ['Art-loving friend', '🌼', 'My art adventure left my lovely fluff in a muddle! Will you help?', 'What a beautiful patch! You are a wonderful artist!'],
+  pickypiggy: ['Picnic friend', '🍎', 'Our picnic was so much fun, but I got all muddy! Can you tidy me up?', 'I feel lovely again! Let’s share a crunchy apple!'],
+  bobbybearhug: ['Cuddly friend', '❤️', 'I gave so many hugs that my seams came loose! Can you mend me?', 'A big bear hug for my wonderful helper!'],
+  kickinchicken: ['Cool friend', '⭐', 'My big adventure got a little messy! Can you help me look bright again?', 'Awesome fixing, Chuyu! You are a superstar!']
 };
-for (const [id, cfg] of Object.entries(MEADOW_FRIENDS)) {
+for (const [id, cfg] of Object.entries(SMILING_CRITTERS)) {
   const [who, pendantIcon, hello, thanks] = FRIEND_STORIES[id];
-  CRITTERS[id] = {name: cfg.name, who, icon: `icons/${id}.jpg`, build: () => buildMeadowFriend(id),
-    fur: cfg.fur, thread: cfg.charm, pendantKey: 'gardenPendant', pendantIcon, earSide: 'leftEar', hello, thanks};
+  CRITTERS[id] = {name: cfg.name, who, icon: `icons/${cfg.ref}`, build: () => buildSmilingCritter(id),
+    fur: cfg.fur, thread: cfg.accent, pendantKey: 'smilingPendant', pendantIcon, earSide: 'leftEar', hello, thanks};
 }
 
 const TOOLS = [
@@ -87,6 +92,7 @@ const TICKLES = ['Hee hee, that tickles!', 'Hi Chuyu!', 'Boop!', 'Giggle giggle!
 /* ============================== Persistence ============================== */
 const SAVE_KEY = 'critterRepair3D_v1';
 const save = Object.assign({ stars: 0, shelf: [], fixed: {} }, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'));
+save.shelf = save.shelf.filter((entry) => CRITTERS[entry.id]);
 const persist = () => localStorage.setItem(SAVE_KEY, JSON.stringify(save));
 
 /* ============================== Renderer & scene ============================== */
@@ -659,6 +665,8 @@ function startVisit() {
 
   // Pick a random set of damages: every visit is different.
   const optional = ['eye', 'ear', 'flat', 'faded', 'pendant'].sort(() => Math.random() - .5).slice(0, 3);
+  // Keep surface repairs on the plush while a loose ear is waiting on the table.
+  if (optional.includes('ear')) c.parts[game.meta.earSide].traverse((o) => { o.userData.noDecal = true; });
   const counts = { mud: 2 + (Math.random() < .5), dust: 2 + (Math.random() < .4), burr: 1 + (Math.random() < .5), tear: 1 + (Math.random() < .35) };
   surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('tangle', h));
   surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('patch', h));
