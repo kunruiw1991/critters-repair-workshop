@@ -14,7 +14,7 @@ fs.mkdirSync(out, {recursive: true});
   // Cover every optional repair for each rig; reduce only rendering resolution.
   source=source.replace('.slice(0, 3);','.slice(0, 5);')
     .replace('renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));','renderer.setPixelRatio(.5);');
-  source+=`\nwindow.__VOICE_TEST__ = () => {const saved = voiceChoices; voiceChoices = [{name:'Grandma',lang:'en-US'}, {name:'Samantha',lang:'en-US'}, {name:'Shelley (English (US))',lang:'en-US'}, {name:'Kyoko',lang:'ja-JP'}]; const chosen=gentleVoice();voiceChoices=saved;return chosen.name;};\nwindow.__PLAYTEST__ = async () => {
+  source+=`\nwindow.__VOICE_TEST__ = () => {const saved = voiceChoices; voiceChoices = [{name:'Google US English',lang:'en-US'}, {name:'Tingting',lang:'zh-CN'}, {name:'Microsoft Xiaoyi Online (Natural)',lang:'zh-CN'}, {name:'Sinji',lang:'zh-HK'}]; const chosen=gentleVoice();voiceChoices=saved;return chosen.name;};\nwindow.__PLAYTEST__ = async () => {
    const log=[];
    for(let step=0;step<100 && game.damages.some(d=>!d.done);step++) {
     const d=game.damages.find(d=>!d.done); findDamage(d.type);
@@ -37,13 +37,17 @@ fs.mkdirSync(out, {recursive: true});
   };`;
   await route.fulfill({response:res,body:source});
  });
+ await page.addInitScript(()=>{window.__spoken=[]; speechSynthesis.speak=(u)=>{window.__spoken.push({text:u.text,lang:u.lang});};});
  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:8765');await page.waitForFunction(()=>window.__REPAIR3D__);
- assert.equal(await page.evaluate(()=>__VOICE_TEST__()),'Shelley (English (US))');
+ assert.equal(await page.evaluate(()=>__VOICE_TEST__()),'Microsoft Xiaoyi Online (Natural)');
  if(process.env.VOICE_ONLY){
   await page.click('#voicePreviewBtn');
-  console.log('Youthful English voice preference and preview control PASS');
+  console.log('Mandarin voice preference and preview control PASS');
   await browser.close(); return;
  }
+ await page.click('#voicePreviewBtn');
+ const preview=await page.evaluate(()=>__spoken.at(-1));assert.match(preview.text,/你好/);assert.match(preview.lang,/^(zh|cmn)/i);
+ assert.equal(await page.locator('html').getAttribute('lang'),'zh-CN');
  const ids=await page.evaluate(()=>__REPAIR3D__.characters());assert.equal(ids.length,11);
  const visitIds=process.env.CRITTERS ? process.env.CRITTERS.split(',') : ids;
  for(const id of visitIds){

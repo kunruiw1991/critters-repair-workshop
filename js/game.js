@@ -2,6 +2,7 @@
 // Mechanics adapted (kid-safe) from doll-restoration ASMR videos: pluck debris, scrub/sand grime, airbrush color back,
 // pop a new eye in, re-attach a limb, stuff & stitch, polish, then a wind-up heart brings the critter to life.
 
+import { VOICE_CLIPS } from './voices/manifest.js';
 import { buildSunnyFox } from './characters/SunnyFox.js';
 import { buildLunaBat } from './characters/LunaBat.js';
 import { buildSmilingCritter, SMILING_CRITTERS } from './characters/SmilingCritters.js';
@@ -17,34 +18,34 @@ const ease = (t) => 1 - Math.pow(1 - clamp01(t), 3);
 /* ============================== Data ============================== */
 const CRITTERS = {
   lunabat: {
-    name: 'LunaBat', who: 'Chuyu', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
+    name: 'LunaBat', who: '你的伙伴', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
     thread: '#c9a8f2', pendantKey: 'moonStarPendant', pendantIcon: '🌙', earSide: 'leftEar',
-    hello: 'Oh no! I got all messy flying through the forest. Can you fix me?',
-    thanks: 'I feel brand new! Let\u2019s fly to the moon together, Chuyu!'
+    hello: '哎呀，飞过森林的时候，我弄得脏兮兮的。帮我修好吧！',
+    thanks: '我又变得软乎乎啦！我们一起飞向月亮吧！'
   },
   sunnyfox: {
-    name: 'SunnyFox', who: 'Mom', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
+    name: 'SunnyFox', who: '妈妈的伙伴', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
     thread: '#f07c78', pendantKey: 'lanternPendant', pendantIcon: '🏮', earSide: 'rightEar',
-    hello: 'My lantern went dim on the muddy trail\u2026 can you help Mommy?',
-    thanks: 'My lantern is glowing again! Thank you for taking care of Mommy, Chuyu!'
+    hello: '走过泥泞小路，我的小灯笼不亮了。帮帮妈妈的伙伴吧！',
+    thanks: '小灯笼又亮起来啦！谢谢你这么细心地照顾我！'
   },
   poppydash: {
-    name: 'PoppyDash', who: 'Dad', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
+    name: 'PoppyDash', who: '爸爸的伙伴', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
     thread: '#f2c14e', pendantKey: 'popcornPendant', pendantIcon: '🍿', earSide: 'rightEar',
-    hello: 'I ran so fast I tumbled into a puddle! Can you patch up Daddy?',
-    thanks: 'Fluffy again! Ready to run and share popcorn. Thanks, Chuyu!'
+    hello: '我跑得太快，扑通一下掉进了水坑！帮爸爸的伙伴补一补吧！',
+    thanks: '又变得蓬松啦！谢谢你，我们一起跑步、分享爆米花吧！'
   }
 };
 
 const FRIEND_STORIES = {
-  dogday: ['Sunshine friend', '☀️', 'I found a sunny trail, and a very muddy puddle! Can you help me shine again?', 'You made my day brighter! Time for a sunny cuddle!'],
-  catnap: ['Moonlight friend', '🌙', 'My cozy nap spot was full of dusty cobwebs. Can you make me soft again?', 'So soft and cozy! Thank you, Chuyu. Sweet dreams!'],
-  hoppyhopscotch: ['Bouncy friend', '⚡', 'One big hop landed me in the brambles! Can you get me bouncing again?', 'Hop, hop, hooray! You are a wonderful friend!'],
-  bubbabubbaphant: ['Clever friend', '💡', 'I was exploring when my fluff got tangled. Can we solve this together?', 'What a brilliant repair! A big elephant thank-you!'],
-  craftycorn: ['Art-loving friend', '🌼', 'My art adventure left my lovely fluff in a muddle! Will you help?', 'What a beautiful patch! You are a wonderful artist!'],
-  pickypiggy: ['Picnic friend', '🍎', 'Our picnic was so much fun, but I got all muddy! Can you tidy me up?', 'I feel lovely again! Let’s share a crunchy apple!'],
-  bobbybearhug: ['Cuddly friend', '❤️', 'I gave so many hugs that my seams came loose! Can you mend me?', 'A big bear hug for my wonderful helper!'],
-  kickinchicken: ['Cool friend', '⭐', 'My big adventure got a little messy! Can you help me look bright again?', 'Awesome fixing, Chuyu! You are a superstar!']
+  dogday: ['阳光伙伴', '☀️', '我在阳光小路上发现了一个大泥坑！帮我变干净，好吗？', '你让今天更闪亮了！送你一个暖暖的拥抱！'],
+  catnap: ['月光伙伴', '🌙', '我的小窝落满了灰尘和蜘蛛网。帮我变回软乎乎的样子吧！', '好柔软，好舒服！谢谢你，祝你做个甜甜的梦！'],
+  hoppyhopscotch: ['蹦跳伙伴', '⚡', '我一下跳进了小灌木丛！帮我修好，我们再一起蹦蹦跳！', '跳一跳，真开心！你是最棒的小伙伴！'],
+  bubbabubbaphant: ['聪明伙伴', '💡', '探险时，我的绒毛打结了。我们一起想办法吧！', '这个办法真聪明！送你一个大大的象象抱！'],
+  craftycorn: ['绘画伙伴', '🌼', '画画的时候，我把绒毛弄乱了。帮帮我，好吗？', '这个补丁真漂亮！你是一位小小艺术家！'],
+  pickypiggy: ['野餐伙伴', '🍎', '野餐真好玩，可是我弄得满身都是泥。帮我洗干净吧！', '又变得香香软软啦！我们一起分享小苹果吧！'],
+  bobbybearhug: ['拥抱伙伴', '❤️', '我抱了好多朋友，缝线都松开了！帮我缝好吧！', '谢谢你，送你一个大大的小熊抱！'],
+  kickinchicken: ['活力伙伴', '⭐', '大冒险把我弄得脏兮兮的。帮我恢复精神吧！', '修得太棒啦！你就是今天的小明星！']
 };
 for (const [id, cfg] of Object.entries(SMILING_CRITTERS)) {
   const [who, pendantIcon, hello, thanks] = FRIEND_STORIES[id];
@@ -53,41 +54,41 @@ for (const [id, cfg] of Object.entries(SMILING_CRITTERS)) {
 }
 
 const TOOLS = [
-  { id: 'brush', icon: '🧹', name: 'Brush', hold: true },
-  { id: 'sponge', icon: '🧽', name: 'Sponge', hold: true },
-  { id: 'dryer', icon: '💨', name: 'Dryer', hold: true },
-  { id: 'tweezers', icon: '🥢', name: 'Tweezers' },
-  { id: 'needle', icon: '🪡', name: 'Needle' },
-  { id: 'button', icon: '🔘', name: 'Button eye' },
-  { id: 'cotton', icon: '☁️', name: 'Stuffing' },
-  { id: 'paint', icon: '🖌️', name: 'Color spray', hold: true },
-  { id: 'cloth', icon: '🧤', name: 'Polish', hold: true },
-  { id: 'comb', icon: '🪮', name: 'Fluff comb', hold: true },
-  { id: 'patch', icon: '🩹', name: 'Cozy patch' },
-  { id: 'checkup', icon: '🩺', name: 'Checkup' },
-  { id: 'heart', icon: '💝', name: 'Wind-up heart' }
+  { id: 'brush', icon: '🧹', name: '小刷子', hold: true },
+  { id: 'sponge', icon: '🧽', name: '小海绵', hold: true },
+  { id: 'dryer', icon: '💨', name: '吹风机', hold: true },
+  { id: 'tweezers', icon: '🥢', name: '小镊子' },
+  { id: 'needle', icon: '🪡', name: '缝缝针' },
+  { id: 'button', icon: '🔘', name: '纽扣眼睛' },
+  { id: 'cotton', icon: '☁️', name: '蓬松棉花' },
+  { id: 'paint', icon: '🖌️', name: '彩色喷笔', hold: true },
+  { id: 'cloth', icon: '🧤', name: '擦亮手套', hold: true },
+  { id: 'comb', icon: '🪮', name: '绒毛梳', hold: true },
+  { id: 'patch', icon: '🩹', name: '暖心补丁' },
+  { id: 'checkup', icon: '🩺', name: '抱抱检查' },
+  { id: 'heart', icon: '💝', name: '唤醒爱心' }
 ];
 const TOOL = Object.fromEntries(TOOLS.map((t) => [t.id, t]));
 
 const DMG = {
-  tangle:  { icon: '🪮', tool: 'comb', label: 'Tangled fluff' },
-  patch:   { icon: '🩹', tool: 'patch', label: 'Worn fabric' },
-  checkup: { icon: '🩺', tool: 'checkup', label: 'Cuddle checkup' },
-  dust:    { icon: '🕸️', tool: 'brush',    label: 'Dusty fluff' },
-  mud:     { icon: '🟤', tool: 'sponge',   label: 'Mud splats' },
-  wet:     { icon: '💧', tool: 'dryer',    label: 'Wet spots' },
-  burr:    { icon: '🌰', tool: 'tweezers', label: 'Sticky burrs' },
-  tear:    { icon: '🧵', tool: 'needle',   label: 'Torn seams' },
-  ear:     { icon: '👂', tool: 'needle',   label: 'Loose ear' },
-  eye:     { icon: '👁️', tool: 'button',   label: 'Lost eye' },
-  flat:    { icon: '🎈', tool: 'cotton',   label: 'Flat & floppy' },
-  faded:   { icon: '🩶', tool: 'paint',    label: 'Faded colors' },
-  pendant: { icon: '💎', tool: 'cloth',    label: 'Dull pendant' }
+  tangle:  { icon: '🪮', tool: 'comb', label: '打结的绒毛' },
+  patch:   { icon: '🩹', tool: 'patch', label: '磨破的布料' },
+  checkup: { icon: '🩺', tool: 'checkup', label: '抱抱检查' },
+  dust:    { icon: '🕸️', tool: 'brush',    label: '灰尘和蛛网' },
+  mud:     { icon: '🟤', tool: 'sponge',   label: '脏脏的泥巴' },
+  wet:     { icon: '💧', tool: 'dryer',    label: '湿湿的水滴' },
+  burr:    { icon: '🌰', tool: 'tweezers', label: '粘人的小刺球' },
+  tear:    { icon: '🧵', tool: 'needle',   label: '松开的缝线' },
+  ear:     { icon: '👂', tool: 'needle',   label: '松开的耳朵' },
+  eye:     { icon: '👁️', tool: 'button',   label: '掉落的眼睛' },
+  flat:    { icon: '🎈', tool: 'cotton',   label: '扁扁的身体' },
+  faded:   { icon: '🩶', tool: 'paint',    label: '褪色的绒毛' },
+  pendant: { icon: '💎', tool: 'cloth',    label: '暗暗的小挂饰' }
 };
 const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant', 'tangle', 'patch', 'checkup'];
 
-const CHEERS = ['Ahh, much better!', 'Yay! Thank you!', 'That feels so nice!', 'Wheee!', 'You\u2019re the best fixer!', 'Ooh, sparkly!'];
-const TICKLES = ['Hee hee, that tickles!', 'Hi Chuyu!', 'Boop!', 'Giggle giggle!'];
+const CHEERS = ['啊，好多啦！', '耶，谢谢你！', '这样好舒服呀！', '好开心！', '你是最棒的小修理师！', '哇，亮晶晶！'];
+const TICKLES = ['嘻嘻，好痒呀！', '你好，小伙伴！', '啵！', '咯咯咯！'];
 
 /* ============================== Persistence ============================== */
 const SAVE_KEY = 'critterRepair3D_v1';
@@ -446,8 +447,8 @@ function rubSfx(tool) {
   if (tool === 'sponge') { noise(850, 1.3, .05, .16); if (Math.random() < .4) tone(rnd(500, 800), 1000, .08, .03); }
   if (tool === 'cloth') { noise(4200, 2, .025, .1); if (Math.random() < .3) tone(1760, 2200, .18, .018); }
 }
-// Prefer bright, youthful English voices for a cute anime-inspired delivery.
-// Keep English pronunciation; Japanese-only voices cannot reliably read these lines.
+// Mandarin device speech is a temporary fallback, not Luo Tianyi's voice.
+// Licensed recorded clips can replace individual lines through voices/manifest.js.
 let voiceChoices = [];
 function refreshVoices() {
   if ('speechSynthesis' in window) voiceChoices = speechSynthesis.getVoices();
@@ -456,23 +457,34 @@ if ('speechSynthesis' in window) {
   refreshVoices(); speechSynthesis.addEventListener('voiceschanged', refreshVoices);
 }
 function gentleVoice() {
-  const english = voiceChoices.filter((v) => /^en(?:-|_)/i.test(v.lang)
-    && !/grandma|grandpa|whisper|bad news|good news|albert|fred|ralph|organ|bells|zarvox|trinoids/i.test(v.name));
-  const preferred = ['Ana', 'Michelle', 'Shelley', 'Sandy', 'Flo', 'Aria', 'Jenny', 'Google US English', 'Samantha'];
+  const mandarin = voiceChoices.filter((v) => /^(zh|cmn)(?:-|_|$)/i.test(v.lang) && !/^zh[-_]HK/i.test(v.lang));
+  const preferred = ['Xiaoyi', 'Xiaoxiao', 'HsiaoChen', 'HsiaoYu', 'Google 普通话', 'Tingting', 'Meijia'];
   const score = (v) => {
     const rank = preferred.findIndex((name) => v.name.toLowerCase().includes(name.toLowerCase()));
     return (rank < 0 ? 0 : (preferred.length - rank) * 100)
       + (/natural|premium|enhanced|neural/i.test(v.name) ? 30 : 0)
-      + (/en[-_]US/i.test(v.lang) ? 10 : 0) + (v.localService ? 5 : 0);
+      + (/^(zh[-_]CN|cmn[-_]Hans[-_]CN)$/i.test(v.lang) ? 10 : 0);
   };
-  return english.sort((a, b) => score(b) - score(a))[0];
+  return mandarin.sort((a, b) => score(b) - score(a))[0];
+}
+let spokenClip = null;
+function stopSpeech() {
+  if (spokenClip) { spokenClip.pause(); spokenClip = null; }
+  if ('speechSynthesis' in window) { speechSynthesis.cancel(); speechSynthesis.resume(); }
 }
 function say(text) {
-  if (!soundOn || !('speechSynthesis' in window) || !text) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text); u.rate = 1.02; u.pitch = 1.25; u.volume = .8;
+  if (!soundOn || !text || game.paused) return;
+  stopSpeech();
+  const clip = VOICE_CLIPS[text];
+  if (clip) {
+    spokenClip = new Audio(clip); spokenClip.volume = .8;
+    spokenClip.play().catch(() => { /* Missing recordings keep the visible dialogue readable. */ });
+    return;
+  }
+  if (!('speechSynthesis' in window)) return;
+  const u = new SpeechSynthesisUtterance(text); u.rate = .95; u.pitch = 1.15; u.volume = .8;
   refreshVoices(); const voice = gentleVoice();
-  if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-US';
+  if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'zh-CN';
   speechSynthesis.speak(u);
 }
 
@@ -642,6 +654,7 @@ function makeSocket(eyeGroup) {
 
 /* ============================== Visit lifecycle ============================== */
 function clearCritter() {
+  game.visitVersion = (game.visitVersion || 0) + 1;
   if (game.critter) { game.critter.parent && game.critter.parent.remove(game.critter); }
   if (game.ear && game.ear.obj.parent === scene) scene.remove(game.ear.obj);
   game.critter = null; game.damages = []; game.ear = null; game.eye = null; game.pend = null; game.fadedMats = null;
@@ -709,11 +722,12 @@ function startVisit() {
   $('home').classList.add('hidden');
   ['ticket', 'toolbox', 'turn', 'pauseBtn', 'stopBtn'].forEach((id2) => $(id2).classList.remove('hidden'));
   $('dress').classList.add('hidden');
-  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = FRIEND_STORIES[id] ? game.meta.who : game.meta.who === 'Chuyu' ? 'Chuyu\u2019s critter' : `${game.meta.who}\u2019s critter`;
+  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = game.meta.who;
   selectTool(null);
   renderTools(); renderTicket();
-  setTimeout(() => { bubble(game.meta.hello, 4200); say(game.meta.hello); }, 1300);
-  setTimeout(() => { renderer.render(scene, camera); game.before = canvas.toDataURL('image/jpeg', .85); }, 1900);
+  const visitVersion = game.visitVersion;
+  setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; bubble(game.meta.hello, 4200); say(game.meta.hello); }, 1300);
+  setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; renderer.render(scene, camera); game.before = canvas.toDataURL('image/jpeg', .85); }, 1900);
 }
 
 /* ============================== HUD ============================== */
@@ -756,7 +770,7 @@ function findDamage(type) {
     game.spinTo = turntable.rotation.y + delta;
     setTimeout(() => { const pos = d.anchor.getWorldPosition(new THREE.Vector3()); burst(pos, 6); }, 900);
   }
-  bubble(`Try the ${TOOL[DMG[type].tool].icon} ${TOOL[DMG[type].tool].name}!`, 2200);
+  bubble(`试试 ${TOOL[DMG[type].tool].icon} ${TOOL[DMG[type].tool].name} 吧！`, 2200);
 }
 let bubbleTimer = 0;
 function bubble(text, ms = 2400) {
@@ -819,11 +833,12 @@ function fixed(d, where) {
       });
       game.spinTo = Math.round(turntable.rotation.y / (Math.PI * 2)) * Math.PI * 2;
       renderTicket(); renderTools(); selectTool('checkup');
-      bubble('One last cuddle check! Tap the three pink rings with the stethoscope. 🩺', 5000);
+      bubble('最后做个抱抱检查吧！用听诊器点一点三个粉色小圈圈。🩺', 5000);
       return;
     }
     renderTools();
-    setTimeout(() => { bubble('I\u2019m all fixed\u2026 but I\u2019m still sleepy. Give me the wind-up heart! 💝', 4200); say('I am all fixed! Now give me the wind-up heart.'); }, 900);
+    const visitVersion = game.visitVersion;
+    setTimeout(() => { if (game.visitVersion !== visitVersion || game.state !== 'repair') return; bubble('我已经修好啦，不过还有点困。送我一颗唤醒爱心吧！💝', 4200); say('我已经修好啦！现在送我一颗唤醒爱心吧。'); }, 900);
   }
 }
 function removeDecal(d, flyTo) {
@@ -903,7 +918,7 @@ function tapTool(x, y) {
     if (d) {
       const pos = d.anchor.getWorldPosition(new THREE.Vector3());
       burst(pos, 8, TEX.heart); removeDecal(d); fixed(d, pos);
-      if (game.damages.some((q) => q.type === 'checkup' && !q.done)) bubble('Soft, snug, and ready for cuddles! 💗', 1800);
+      if (game.damages.some((q) => q.type === 'checkup' && !q.done)) bubble('软软的，暖暖的，可以抱抱啦！💗', 1800);
       return true;
     }
   }
@@ -914,7 +929,7 @@ function tapTool(x, y) {
       if (n === 1) {
         const patch = new THREE.Mesh(new THREE.CircleGeometry(.105, 5), std({color: game.meta.thread, roughness: .9}));
         patch.position.z = .012; g.add(patch);
-        bubble('A cozy patch! Press two more times to make it snug. 🩹', 2400);
+        bubble('暖心补丁贴上啦！再按两下，让它更牢固。🩹', 2400);
       }
       const stitch = new THREE.Mesh(new THREE.TorusGeometry(.082, .006, 6, 24, Math.PI * 2 / 3), M.cottonM);
       stitch.position.z = .018; stitch.rotation.z = (n - 1) * Math.PI * 2 / 3; g.add(stitch);
@@ -981,7 +996,7 @@ function wrongToolHint(x, y) {
   if (need && need !== game.tool) {
     const el = document.querySelector(`#tools .tool[data-t="${need}"]`);
     if (el) { el.classList.remove('wiggle'); void el.offsetWidth; el.classList.add('wiggle'); }
-    bubble(`Hmm\u2026 maybe the ${TOOL[need].icon} ${TOOL[need].name}?`, 2000); tone(330, 300, .15, .03);
+    bubble(`嗯，试试 ${TOOL[need].icon} ${TOOL[need].name} 好吗？`, 2000); tone(330, 300, .15, .03);
     return true;
   }
   return false;
@@ -1046,7 +1061,7 @@ function makeAccessory(kind) {
   g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
   return g;
 }
-const DRESS = [['bow', '🎀', 'Bow'], ['crown', '🌼', 'Flowers'], ['hat', '🥳', 'Party hat'], ['scarf', '🧣', 'Scarf'], ['star', '⭐', 'Star clip']];
+const DRESS = [['bow', '🎀', '蝴蝶结'], ['crown', '🌼', '小花环'], ['hat', '🥳', '派对帽'], ['scarf', '🧣', '小围巾'], ['star', '⭐', '星星夹']];
 function showDress() {
   $('toolbox').classList.add('hidden'); $('dress').classList.remove('hidden');
   $('dressItems').innerHTML = DRESS.map(([k, i, n]) => `<div class="tool" data-k="${k}"><div class="face">${i}</div><span>${n}</span></div>`).join('');
@@ -1091,9 +1106,9 @@ function goToShelf() {
 }
 function showCard(after) {
   const v = $('endVeil');
-  v.innerHTML = `<div class="card glass"><h2>${game.meta.name} is all better!</h2><p>${game.meta.thanks}</p>
-    <div class="ba"><figure><img src="${game.before || after}" alt="before"><figcaption>Before</figcaption></figure><figure><img src="${after}" alt="after"><figcaption>After</figcaption></figure></div>
-    <div class="btnrow"><button class="cta small" id="nextBtn">🧸 Fix another friend</button><button class="ghost" id="saveBtn">📸 Save photo</button></div></div>`;
+  v.innerHTML = `<div class="card glass"><h2>${game.meta.name} 修好啦！</h2><p>${game.meta.thanks}</p>
+    <div class="ba"><figure><img src="${game.before || after}" alt="before"><figcaption>修理前</figcaption></figure><figure><img src="${after}" alt="after"><figcaption>修理后</figcaption></figure></div>
+    <div class="btnrow"><button class="cta small" id="nextBtn">🧸 再帮一个伙伴</button><button class="ghost" id="saveBtn">📸 保存照片</button></div></div>`;
   v.classList.remove('hidden');
   $('nextBtn').onclick = () => { v.classList.add('hidden'); goHome(); };
   $('saveBtn').onclick = () => { const a = document.createElement('a'); a.download = `${game.meta.name}-repaired.jpg`; a.href = after; a.click(); };
@@ -1106,6 +1121,7 @@ function renderPatients() {
   $('patients').querySelectorAll('.patient').forEach((el) => el.onclick = () => { game.sel = el.dataset.k; tone(600, 760, .12, .03); renderPatients(); previewCritter(game.sel); });
 }
 function goHome() {
+  stopSpeech();
   game.state = 'home'; game.paused = false;
   ['ticket', 'toolbox', 'turn', 'dress', 'pauseBtn', 'stopBtn', 'pauseVeil', 'endVeil', 'bubble'].forEach((id) => $(id).classList.add('hidden'));
   $('home').classList.remove('hidden');
@@ -1163,17 +1179,17 @@ function moveCursor(e) {
 $('rotL').onclick = () => { game.spinTo = turntable.rotation.y - Math.PI / 3; tone(500, 600, .1, .03); };
 $('rotR').onclick = () => { game.spinTo = turntable.rotation.y + Math.PI / 3; tone(500, 600, .1, .03); };
 $('zoomBtn').onclick = () => setCam(camMode === 'near' ? 'far' : 'near');
-$('voicePreviewBtn').onclick = () => say('Hi, Chuyu! I’m your cuddly critter friend. Let’s make something lovely together!');
+$('voicePreviewBtn').onclick = () => say('你好呀！我是你的微笑小伙伴。我们一起，把爱和温暖缝进小小的补丁里吧！');
 $('startBtn').onclick = () => { music.started = true; startVisit(); };
 $('stopBtn').onclick = goHome;
 $('pauseBtn').onclick = () => setPaused(!game.paused);
 $('resumeBtn').onclick = () => setPaused(false);
 $('shelfBtn').onclick = goToShelf;
 $('musicBtn').onclick = () => { music.started = true; music.toggle(); };
-$('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').classList.toggle('off', !soundOn); if (!soundOn) { Object.keys(loops).forEach((k) => loopNoise(k, false)); if ('speechSynthesis' in window) speechSynthesis.cancel(); } };
+$('soundBtn').onclick = () => { soundOn = !soundOn; $('soundBtn').classList.toggle('off', !soundOn); if (!soundOn) { Object.keys(loops).forEach((k) => loopNoise(k, false)); stopSpeech(); } };
 function setPaused(p) {
   game.paused = p; $('pauseVeil').classList.toggle('hidden', !p); $('pauseBtn').textContent = p ? '▶' : '⏸';
-  if (p) { endPointer(); Object.values(music.tracks).forEach((a) => a.pause()); } else { const c = music.cur; music.cur = null; music.play(c || 'theme'); }
+  if (p) { if (spokenClip) spokenClip.pause(); if ('speechSynthesis' in window) speechSynthesis.pause(); endPointer(); Object.values(music.tracks).forEach((a) => a.pause()); } else { if (spokenClip) spokenClip.play().catch(() => {}); if ('speechSynthesis' in window) speechSynthesis.resume(); const c = music.cur; music.cur = null; music.play(c || 'theme'); }
 }
 
 /* ============================== Animation loop ============================== */

@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Critter Repair 3D">
 <meta name="theme-color" content="#2a2233">
-<title>Critter Repair Workshop 3D</title>
+<title>微笑小伙伴修理屋 3D</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,25 +14,25 @@
 
 <!-- Top bar -->
 <header id="top">
-  <div class="brand"><span class="logo">🧵</span><div><b>Critter Repair Workshop</b><small>Fix-it clinic for our family critters</small></div></div>
+  <div class="brand"><span class="logo">🧵</span><div><b>微笑小伙伴修理屋</b><small>给每个小伙伴暖暖的照顾</small></div></div>
   <div class="right">
     <div class="pill" id="starPill">⭐ <span id="stars">0</span></div>
-    <button class="round" id="musicBtn" title="Music">🎵</button>
-    <button class="round" id="soundBtn" title="Sounds &amp; voice">🔊</button>
-    <button class="round hidden" id="pauseBtn" title="Pause">⏸</button>
-    <button class="round hidden" id="stopBtn" title="Stop">⏹</button>
+    <button class="round" id="musicBtn" title="背景音乐">🎵</button>
+    <button class="round" id="soundBtn" title="音效和语音">🔊</button>
+    <button class="round hidden" id="pauseBtn" title="暂停">⏸</button>
+    <button class="round hidden" id="stopBtn" title="返回选伙伴">⏹</button>
   </div>
 </header>
 
 <!-- Home -->
 <section id="home" class="overlay">
   <div class="homecard glass">
-    <h1>Who needs fixing today?</h1>
-    <p>Our critters came home from a big adventure, all muddy, dusty and torn. Pick a friend and fix them in <b>any order you like</b>.</p>
+    <h1>今天帮哪个小伙伴？</h1>
+    <p>小伙伴们探险回来，身上脏脏的，缝线也松了。选一位朋友，<b>按你喜欢的顺序</b>照顾它吧！</p>
     <div class="patients" id="patients"></div>
     <div class="home-actions">
-    <button class="cta" id="startBtn">▶ Start repairing</button>
-    <button class="ghost voice-preview" id="voicePreviewBtn">🎀 Hear critter voice</button>
+    <button class="cta" id="startBtn">▶ 开始修理</button>
+    <button class="ghost voice-preview" id="voicePreviewBtn">🎀 试听中文声音</button>
     </div>
   </div>
 </section>
@@ -40,25 +40,25 @@
 <!-- In-game HUD -->
 <aside id="ticket" class="glass hidden">
   <div class="tk-head"><img id="tkIcon" alt=""><div><b id="tkName"></b><small id="tkWho"></small></div></div>
-  <div class="tk-title">Repair ticket</div>
+  <div class="tk-title">修理小清单</div>
   <div id="chips"></div>
   <div class="heart-meter"><span>💗</span><div class="bar"><div id="heartFill"></div></div></div>
-  <div class="tk-tip">Tap a ticket item to find it.</div>
+  <div class="tk-tip">点一点清单，就能找到要修的地方。</div>
 </aside>
 
 <div id="turn" class="hidden">
-  <button class="round" id="rotL" title="Turn left">⟲</button>
-  <button class="round" id="zoomBtn" title="Zoom">🔍</button>
-  <button class="round" id="rotR" title="Turn right">⟳</button>
+  <button class="round" id="rotL" title="向左转">⟲</button>
+  <button class="round" id="zoomBtn" title="放大或缩小">🔍</button>
+  <button class="round" id="rotR" title="向右转">⟳</button>
 </div>
 
 <nav id="toolbox" class="hidden"><div class="drawer" id="tools"></div></nav>
 
 <nav id="dress" class="hidden">
   <div class="drawer">
-    <div class="dress-title">Pick a present</div>
+    <div class="dress-title">选一份小礼物</div>
     <div class="row" id="dressItems"></div>
-    <button class="cta small" id="shelfBtn">🏠 Go to the Happy Shelf</button>
+    <button class="cta small" id="shelfBtn">🏠 去快乐伙伴架</button>
   </div>
 </nav>
 
@@ -66,7 +66,7 @@
 <div id="cursor"></div>
 <div id="toast" class="hidden"></div>
 
-<section id="pauseVeil" class="overlay hidden"><div class="glass homecard small"><h1>Taking a little rest</h1><button class="cta" id="resumeBtn">▶ Resume</button></div></section>
+<section id="pauseVeil" class="overlay hidden"><div class="glass homecard small"><h1>休息一小会儿</h1><button class="cta" id="resumeBtn">▶ 继续玩</button></div></section>
 <section id="endVeil" class="overlay hidden"></section>
 
 <script src="js/vendor/three.min.js"></script>
