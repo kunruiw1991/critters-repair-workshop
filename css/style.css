@@ -96,3 +96,28 @@ button{font:inherit;color:inherit;border:none;cursor:pointer}
 .ghost{background:#fff;font-weight:800;padding:12px 20px;border-radius:999px;box-shadow:var(--shadow)}
 
 @media (max-width:900px){#ticket{width:200px;top:80px;padding:12px}.chip{font-size:13px}.tool{width:64px}.tool .face{width:58px;height:58px;font-size:32px}.brand small{display:none}}
+
+/* A six-friend selection and a reachable toolbox on small screens. */
+.homecard{max-height:calc(100dvh - 24px);overflow-y:auto}
+.patients{gap:12px}
+.patient{width:180px;font:inherit;color:inherit}
+.patient img{width:86px;height:86px}
+.tool{background:transparent;padding:0;font:inherit}
+#ticket{max-height:calc(100dvh - 224px);overflow-y:auto}
+#toolbox{width:max-content;max-width:98vw}
+#toolbox .drawer{max-width:98vw}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
+@media(max-width:600px){
+  .homecard{padding:18px 12px}.homecard p{font-size:14px;margin-bottom:12px}
+  .patients{gap:8px;margin-bottom:14px}.patient{width:calc(33.33% - 6px);padding:8px 3px;border-radius:18px}
+  .patient img{width:60px;height:60px}.patient b{font-size:12px}.patient span{font-size:11px}
+  .brand{padding:8px}.brand b{font-size:12px}.brand .logo{display:none}
+  #top{padding:10px 8px}.right{gap:4px}.round{width:36px;height:36px;font-size:18px}.pill{height:36px;padding:0 8px;font-size:15px}
+  #ticket{left:8px;top:62px;width:146px;padding:8px;max-height:calc(100dvh - 192px)}
+  .tk-head img{width:30px;height:30px}.tk-head b{font-size:12px}.tk-head small{font-size:10px}
+  .chip{gap:4px;font-size:11px;padding:5px}.chip i{font-size:16px;width:20px}.chip .n{min-width:20px;height:20px}
+  #turn{right:8px}.tool{width:58px}.tool .face{width:52px;height:52px;font-size:28px}
+  .drawer{gap:6px;padding:10px}.tool span{font-size:10px}#bubble{font-size:13px;max-width:200px}
+}
+
+.voice-preview{display:block;margin:12px auto 0;font-size:13px;padding:8px 16px}

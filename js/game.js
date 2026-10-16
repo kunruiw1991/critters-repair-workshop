@@ -4,6 +4,7 @@
 
 import { buildSunnyFox } from './characters/SunnyFox.js';
 import { buildLunaBat } from './characters/LunaBat.js';
+import { buildMeadowFriend, MEADOW_FRIENDS } from './characters/MeadowFriends.js';
 import { buildPoppyDash } from './characters/PoppyDash.js';
 
 const THREE = window.THREE;
@@ -35,6 +36,17 @@ const CRITTERS = {
   }
 };
 
+const FRIEND_STORIES = {
+  cloverbunny: ['Garden friend', '🌸', 'I followed a butterfly through the brambles. Can you fluff me up?', 'My ears are bouncy again! Let’s plant a flower together!'],
+  pebblepanda: ['Picnic friend', '⭐', 'My picnic blanket snagged my fluff. Will you help me feel cozy?', 'You made me feel so cozy! There is a place for you at my picnic!'],
+  sproutdragon: ['Forest friend', '🌿', 'I tried to hug a prickly bush! Can you mend my cuddly scales?', 'My wings feel wonderful! Let’s fly over the treetops!']
+};
+for (const [id, cfg] of Object.entries(MEADOW_FRIENDS)) {
+  const [who, pendantIcon, hello, thanks] = FRIEND_STORIES[id];
+  CRITTERS[id] = {name: cfg.name, who, icon: `icons/${id}.jpg`, build: () => buildMeadowFriend(id),
+    fur: cfg.fur, thread: cfg.charm, pendantKey: 'gardenPendant', pendantIcon, earSide: 'leftEar', hello, thanks};
+}
+
 const TOOLS = [
   { id: 'brush', icon: '🧹', name: 'Brush', hold: true },
   { id: 'sponge', icon: '🧽', name: 'Sponge', hold: true },
@@ -45,11 +57,17 @@ const TOOLS = [
   { id: 'cotton', icon: '☁️', name: 'Stuffing' },
   { id: 'paint', icon: '🖌️', name: 'Color spray', hold: true },
   { id: 'cloth', icon: '🧤', name: 'Polish', hold: true },
+  { id: 'comb', icon: '🪮', name: 'Fluff comb', hold: true },
+  { id: 'patch', icon: '🩹', name: 'Cozy patch' },
+  { id: 'checkup', icon: '🩺', name: 'Checkup' },
   { id: 'heart', icon: '💝', name: 'Wind-up heart' }
 ];
 const TOOL = Object.fromEntries(TOOLS.map((t) => [t.id, t]));
 
 const DMG = {
+  tangle:  { icon: '🪮', tool: 'comb', label: 'Tangled fluff' },
+  patch:   { icon: '🩹', tool: 'patch', label: 'Worn fabric' },
+  checkup: { icon: '🩺', tool: 'checkup', label: 'Cuddle checkup' },
   dust:    { icon: '🕸️', tool: 'brush',    label: 'Dusty fluff' },
   mud:     { icon: '🟤', tool: 'sponge',   label: 'Mud splats' },
   wet:     { icon: '💧', tool: 'dryer',    label: 'Wet spots' },
@@ -61,7 +79,7 @@ const DMG = {
   faded:   { icon: '🩶', tool: 'paint',    label: 'Faded colors' },
   pendant: { icon: '💎', tool: 'cloth',    label: 'Dull pendant' }
 };
-const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant'];
+const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant', 'tangle', 'patch', 'checkup'];
 
 const CHEERS = ['Ahh, much better!', 'Yay! Thank you!', 'That feels so nice!', 'Wheee!', 'You\u2019re the best fixer!', 'Ooh, sparkly!'];
 const TICKLES = ['Hee hee, that tickles!', 'Hi Chuyu!', 'Boop!', 'Giggle giggle!'];
@@ -422,10 +440,33 @@ function rubSfx(tool) {
   if (tool === 'sponge') { noise(850, 1.3, .05, .16); if (Math.random() < .4) tone(rnd(500, 800), 1000, .08, .03); }
   if (tool === 'cloth') { noise(4200, 2, .025, .1); if (Math.random() < .3) tone(1760, 2200, .18, .018); }
 }
+// Prefer bright, youthful English voices for a cute anime-inspired delivery.
+// Keep English pronunciation; Japanese-only voices cannot reliably read these lines.
+let voiceChoices = [];
+function refreshVoices() {
+  if ('speechSynthesis' in window) voiceChoices = speechSynthesis.getVoices();
+}
+if ('speechSynthesis' in window) {
+  refreshVoices(); speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+}
+function gentleVoice() {
+  const english = voiceChoices.filter((v) => /^en(?:-|_)/i.test(v.lang)
+    && !/grandma|grandpa|whisper|bad news|good news|albert|fred|ralph|organ|bells|zarvox|trinoids/i.test(v.name));
+  const preferred = ['Ana', 'Michelle', 'Shelley', 'Sandy', 'Flo', 'Aria', 'Jenny', 'Google US English', 'Samantha'];
+  const score = (v) => {
+    const rank = preferred.findIndex((name) => v.name.toLowerCase().includes(name.toLowerCase()));
+    return (rank < 0 ? 0 : (preferred.length - rank) * 100)
+      + (/natural|premium|enhanced|neural/i.test(v.name) ? 30 : 0)
+      + (/en[-_]US/i.test(v.lang) ? 10 : 0) + (v.localService ? 5 : 0);
+  };
+  return english.sort((a, b) => score(b) - score(a))[0];
+}
 function say(text) {
   if (!soundOn || !('speechSynthesis' in window) || !text) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text); u.rate = .9; u.pitch = 1.2; u.lang = 'en-US';
+  const u = new SpeechSynthesisUtterance(text); u.rate = 1.02; u.pitch = 1.25; u.volume = .8;
+  refreshVoices(); const voice = gentleVoice();
+  if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-US';
   speechSynthesis.speak(u);
 }
 
@@ -496,7 +537,18 @@ const M = {
 };
 function makeDecal(type) {
   const g = new THREE.Group();
-  if (type === 'mud') {
+  if (type === 'tangle') {
+    const mat = std({color: game.meta.thread, roughness: 1});
+    for (let i = 0; i < 5; i++) {
+      const loop = new THREE.Mesh(new THREE.TorusGeometry(.045, .013, 8, 16, Math.PI * 1.7), mat);
+      loop.position.set((i - 2) * .035, Math.sin(i * 2) * .025, .02 + i * .005);
+      loop.rotation.z = i * 1.3; g.add(loop);
+    }
+  } else if (type === 'patch') {
+    const hole = new THREE.Mesh(new THREE.CircleGeometry(.10, 24), M.slit); g.add(hole);
+    const backing = new THREE.Mesh(new THREE.CircleGeometry(.085, 24), M.cottonM);
+    backing.position.z = .004; g.add(backing); g.userData.presses = 0;
+  } else if (type === 'mud') {
     for (let i = 0; i < 4; i++) {
       const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.045, .085), 20, 14), i ? M.mud : M.mud2);
       b.scale.z = .22; b.position.set(rnd(-.06, .06), rnd(-.05, .05), .005 * i); g.add(b);
@@ -602,17 +654,20 @@ function startVisit() {
   game.meta = CRITTERS[id];
   const c = buildCritter(id);
   c.position.y = .97; holder.add(c); holder.rotation.y = 0; turntable.rotation.y = 0;
-  game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0;
+  game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0; game.checkupStarted = false;
   c.updateMatrixWorld(true);
 
   // Pick a random set of damages: every visit is different.
   const optional = ['eye', 'ear', 'flat', 'faded', 'pendant'].sort(() => Math.random() - .5).slice(0, 3);
   const counts = { mud: 2 + (Math.random() < .5), dust: 2 + (Math.random() < .4), burr: 1 + (Math.random() < .5), tear: 1 + (Math.random() < .35) };
+  surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('tangle', h));
+  surfaceHits(c, 1, .25, 'front').forEach((h) => addDamage('patch', h));
   // Surface decals (tears biased to the front so they are easy to find).
   surfaceHits(c, counts.tear, .35, 'front').forEach((h) => addDamage('tear', h));
   surfaceHits(c, counts.mud, .3).forEach((h) => addDamage('mud', h));
   surfaceHits(c, counts.dust, .3).forEach((h) => addDamage('dust', h));
   surfaceHits(c, counts.burr, .28).forEach((h) => addDamage('burr', h));
+
 
   if (optional.includes('eye')) {
     const eyes = c.parts.eyes, side = pick(['leftEye', 'rightEye']);
@@ -646,7 +701,7 @@ function startVisit() {
   $('home').classList.add('hidden');
   ['ticket', 'toolbox', 'turn', 'pauseBtn', 'stopBtn'].forEach((id2) => $(id2).classList.remove('hidden'));
   $('dress').classList.add('hidden');
-  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = game.meta.who === 'Chuyu' ? 'Chuyu\u2019s critter' : `${game.meta.who}\u2019s critter`;
+  $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = FRIEND_STORIES[id] ? game.meta.who : game.meta.who === 'Chuyu' ? 'Chuyu\u2019s critter' : `${game.meta.who}\u2019s critter`;
   selectTool(null);
   renderTools(); renderTicket();
   setTimeout(() => { bubble(game.meta.hello, 4200); say(game.meta.hello); }, 1300);
@@ -656,8 +711,8 @@ function startVisit() {
 /* ============================== HUD ============================== */
 function renderTools() {
   const allFixed = game.state === 'repair' && game.damages.every((d) => d.done);
-  $('tools').innerHTML = TOOLS.filter((t) => t.id !== 'heart' || allFixed).map((t) =>
-    `<div class="tool ${game.tool === t.id ? 'sel' : ''} ${t.id === 'heart' ? 'heart glow' : ''}" data-t="${t.id}"><div class="face">${t.icon}</div><span>${t.name}</span></div>`).join('');
+  $('tools').innerHTML = TOOLS.filter((t) => (t.id !== 'heart' || allFixed) && (t.id !== 'checkup' || game.checkupStarted)).map((t) =>
+    `<button type="button" class="tool ${game.tool === t.id ? 'sel' : ''} ${t.id === 'heart' ? 'heart glow' : ''}" data-t="${t.id}"><div class="face">${t.icon}</div><span>${t.name}</span></button>`).join('');
   $('tools').querySelectorAll('.tool').forEach((el) => el.onclick = () => { selectTool(game.tool === el.dataset.t ? null : el.dataset.t); tone(620, 780, .1, .03); });
 }
 function selectTool(id) {
@@ -739,12 +794,26 @@ function hitCritter(x, y) {
   return raycaster.intersectObject(game.critter, true)[0] || null;
 }
 function fixed(d, where) {
+  if (d.done) return;
   d.done = true; game.fixedCount++;
   addStars(1, where);
   chime([659, 784, 988]);
   if (Math.random() < .7) bubble(pick(CHEERS), 1800);
   renderTicket();
   if (game.damages.every((x) => x.done)) {
+    if (!game.checkupStarted) {
+      game.checkupStarted = true;
+      ['head', 'torso', 'leftLeg'].forEach((part) => {
+        const marker = new THREE.Group(); marker.position.set(0, 0, part === 'head' ? .52 : .4);
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(.065, .013, 8, 24), std({color: '#ff96bd', emissive: '#ff96bd', emissiveIntensity: .3}));
+        marker.add(ring); game.critter.parts[part].add(marker);
+        game.damages.push({type: 'checkup', anchor: marker, hp: 1, done: false, id: game.damages.length});
+      });
+      game.spinTo = Math.round(turntable.rotation.y / (Math.PI * 2)) * Math.PI * 2;
+      renderTicket(); renderTools(); selectTool('checkup');
+      bubble('One last cuddle check! Tap the three pink rings with the stethoscope. 🩺', 5000);
+      return;
+    }
     renderTools();
     setTimeout(() => { bubble('I\u2019m all fixed\u2026 but I\u2019m still sleepy. Give me the wind-up heart! 💝', 4200); say('I am all fixed! Now give me the wind-up heart.'); }, 900);
   }
@@ -793,7 +862,7 @@ function holdTool(x, y, dt) {
     }
     return;
   }
-  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet' }[t];
+  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet', comb: 'tangle' }[t];
   if (!type) return;
   if (t === 'dryer') loopNoise('dryer', true, 650, 'lowpass', .045); else rubSfx(t);
   const d = nearestDamage(x, y, [type], 95);
@@ -802,16 +871,16 @@ function holdTool(x, y, dt) {
   const p = d.anchor.getWorldPosition(new THREE.Vector3());
   d.anchor.scale.setScalar(.35 + .65 * Math.max(0, d.hp));
   if (t === 'sponge' && Math.random() < .25) spawn(TEX.bubble, p.clone().add(new THREE.Vector3(rnd(-.08, .08), rnd(-.02, .06), .06)), { vel: new THREE.Vector3(rnd(-.05, .05), rnd(.12, .25), rnd(-.02, .05)), life: rnd(1.8, 2.8), size: rnd(.05, .09), grow: .3 });
-  if (t === 'brush' && Math.random() < .18) spawn(TEX.puff, p.clone(), { vel: new THREE.Vector3(rnd(-.25, .25), rnd(.05, .2), .15), life: 1.6, size: .1, grow: .8, opacity: .8 });
+  if ((t === 'brush' || t === 'comb') && Math.random() < .18) spawn(TEX.puff, p.clone(), { vel: new THREE.Vector3(rnd(-.25, .25), rnd(.05, .2), .15), life: 1.6, size: .1, grow: .8, opacity: .8 });
   if (t === 'dryer' && Math.random() < .2) spawn(TEX.soft, p.clone(), { vel: new THREE.Vector3(rnd(-.1, .1), .3, .1), life: 1.2, size: .08, grow: 1.5, opacity: .35 });
   if (d.hp <= 0) {
     removeDecal(d);
-    fixed(d, p);
     if (type === 'mud') {
       // Washing leaves the fur wet: new drops appear to dry (a tiny chain reaction).
       const hit = { point: p, normal: tmpV2.set(0, 0, 1).applyQuaternion(d.anchor.getWorldQuaternion(tmpQ)).clone(), object: d.anchor.parent || game.critter };
       if (hit.object && hit.object !== scene) { const w = addDamage('wet', hit); w.anchor.scale.setScalar(.9); game.total++; renderTicket(); }
     }
+    fixed(d, p);
   }
 }
 // Tap tools.
@@ -820,6 +889,31 @@ function tapTool(x, y) {
   if (t === 'heart') {
     if (hit && game.damages.every((d) => d.done) && !game.heartIn) wakeUp(hit.point);
     return true;
+  }
+  if (t === 'checkup') {
+    const d = nearestDamage(x, y, ['checkup'], 70);
+    if (d) {
+      const pos = d.anchor.getWorldPosition(new THREE.Vector3());
+      burst(pos, 8, TEX.heart); removeDecal(d); fixed(d, pos);
+      if (game.damages.some((q) => q.type === 'checkup' && !q.done)) bubble('Soft, snug, and ready for cuddles! 💗', 1800);
+      return true;
+    }
+  }
+  if (t === 'patch') {
+    const d = nearestDamage(x, y, ['patch'], 85);
+    if (d) {
+      const g = d.anchor, n = ++g.userData.presses;
+      if (n === 1) {
+        const patch = new THREE.Mesh(new THREE.CircleGeometry(.105, 5), std({color: game.meta.thread, roughness: .9}));
+        patch.position.z = .012; g.add(patch);
+        bubble('A cozy patch! Press two more times to make it snug. 🩹', 2400);
+      }
+      const stitch = new THREE.Mesh(new THREE.TorusGeometry(.082, .006, 6, 24, Math.PI * 2 / 3), M.cottonM);
+      stitch.position.z = .018; stitch.rotation.z = (n - 1) * Math.PI * 2 / 3; g.add(stitch);
+      tone(520 + n * 110, 760 + n * 110, .12, .04);
+      if (n >= 3) fixed(d, g.getWorldPosition(new THREE.Vector3()));
+      return true;
+    }
   }
   if (t === 'tweezers') {
     const d = nearestDamage(x, y, ['burr']);
@@ -999,8 +1093,8 @@ function showCard(after) {
 
 /* ============================== Home ============================== */
 function renderPatients() {
-  $('patients').innerHTML = Object.entries(CRITTERS).map(([k, c]) => `<div class="patient ${k === game.sel ? 'sel' : ''}" data-k="${k}">
-    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span><div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></div>`).join('');
+  $('patients').innerHTML = Object.entries(CRITTERS).map(([k, c]) => `<button type="button" class="patient ${k === game.sel ? 'sel' : ''}" data-k="${k}">
+    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span><div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></button>`).join('');
   $('patients').querySelectorAll('.patient').forEach((el) => el.onclick = () => { game.sel = el.dataset.k; tone(600, 760, .12, .03); renderPatients(); previewCritter(game.sel); });
 }
 function goHome() {
@@ -1029,7 +1123,7 @@ canvas.addEventListener('pointerdown', (e) => {
   if (game.state === 'repair' && t && (onCritter || onEar || nearDamage)) {
     if (TOOL[t].hold) {
       pointer.mode = 'hold';
-      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded' }[t];
+      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded', comb: 'tangle' }[t];
       const any = game.damages.some((d) => !d.done && d.type === matches);
       if (!any || (nearDamage && DMG[nearDamage.type].tool !== t && !['paint'].includes(t))) wrongToolHint(e.clientX, e.clientY);
     } else {
@@ -1061,6 +1155,7 @@ function moveCursor(e) {
 $('rotL').onclick = () => { game.spinTo = turntable.rotation.y - Math.PI / 3; tone(500, 600, .1, .03); };
 $('rotR').onclick = () => { game.spinTo = turntable.rotation.y + Math.PI / 3; tone(500, 600, .1, .03); };
 $('zoomBtn').onclick = () => setCam(camMode === 'near' ? 'far' : 'near');
+$('voicePreviewBtn').onclick = () => say('Hi, Chuyu! I’m your cuddly critter friend. Let’s make something lovely together!');
 $('startBtn').onclick = () => { music.started = true; startVisit(); };
 $('stopBtn').onclick = goHome;
 $('pauseBtn').onclick = () => setPaused(!game.paused);
@@ -1164,6 +1259,7 @@ requestAnimationFrame(frame);
 
 /* ============================== Test hooks ============================== */
 window.__REPAIR3D__ = {
+  characters: () => Object.keys(CRITTERS),
   get state() { return game.state; },
   get tool() { return game.tool; },
   damages: () => game.damages.map((d) => ({ type: d.type, done: d.done })),

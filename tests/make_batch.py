@@ -18,8 +18,8 @@ window.__T = (() => {
   const cv = document.getElementById('gl');
   const ev = (t, x, y) => (t === 'pointerdown' ? cv : window).dispatchEvent(new PointerEvent(t, {clientX: x, clientY: y, bubbles: true, pointerId: 1, isPrimary: true, buttons: t === 'pointerup' ? 0 : 1}));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const TOOLFOR = {mud: 'sponge', dust: 'brush', burr: 'tweezers', tear: 'needle', wet: 'dryer', eye: 'button', ear: 'needle', flat: 'cotton', faded: 'paint', pendant: 'cloth'};
-  const HOLD = {sponge: 1, brush: 1, dryer: 1, paint: 1, cloth: 1};
+  const TOOLFOR = {mud: 'sponge', dust: 'brush', burr: 'tweezers', tear: 'needle', wet: 'dryer', eye: 'button', ear: 'needle', flat: 'cotton', faded: 'paint', pendant: 'cloth', tangle: 'comb', patch: 'patch', checkup: 'checkup'};
+  const HOLD = {sponge: 1, brush: 1, dryer: 1, paint: 1, cloth: 1, comb: 1};
   async function tap(x, y) { ev('pointerdown', x, y); await sleep(60); ev('pointerup', x, y); }
   async function hold(x, y, ms) { ev('pointerdown', x, y); for (let k = 0; k < ms / 100; k++) { ev('pointermove', x + (k % 2 ? 3 : -3), y); await sleep(100); } ev('pointerup', x, y); }
   async function fixAll(maxSteps) {
@@ -32,7 +32,7 @@ window.__T = (() => {
       if (type === 'flat' || type === 'faded') p = R.critterScreen();
       if (HOLD[tool]) await hold(p.x, p.y, type === 'faded' ? 4500 : 2600);
       else if (type === 'flat') { for (let k = 0; k < 5 && !R.damages()[i].done; k++) { await tap(p.x, p.y); await sleep(1300); } }
-      else if (type === 'tear') { for (let k = 0; k < 4; k++) { const q = R.screen(i); await tap(q.x, q.y); await sleep(250); } }
+      else if (type === 'tear' || type === 'patch') { for (let k = 0; k < 4; k++) { const q = R.screen(i); await tap(q.x, q.y); await sleep(250); } }
       else if (type === 'ear') { await tap(p.x, p.y); await sleep(2000); }
       else await tap(p.x, p.y);
       await sleep(500);
