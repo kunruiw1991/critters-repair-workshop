@@ -1291,10 +1291,16 @@ function frame(now) {
   if (!game.paused) {
     game.t += dt;
     const t = game.t;
-    // Camera easing between framings
+    // Camera easing between framings (step back slightly for giant 45cm Bigger Bodies critters)
     const cm = CAM[camMode];
-    camera.position.lerp(cm.pos, Math.min(1, dt * 1.8));
-    camLook.lerp(cm.look, Math.min(1, dt * 1.8));
+    const targetPos = (camMode === 'near' && game.meta && game.meta.isNightmare45cm)
+      ? new THREE.Vector3(0, 1.80, 5.55)
+      : cm.pos;
+    const targetLook = (camMode === 'near' && game.meta && game.meta.isNightmare45cm)
+      ? new THREE.Vector3(0, 1.12, 0)
+      : cm.look;
+    camera.position.lerp(targetPos, Math.min(1, dt * 1.8));
+    camLook.lerp(targetLook, Math.min(1, dt * 1.8));
     camera.lookAt(camLook);
     if (game.spinTo != null) { turntable.rotation.y += (game.spinTo - turntable.rotation.y) * Math.min(1, dt * 3); if (Math.abs(game.spinTo - turntable.rotation.y) < .002) game.spinTo = null; }
     if (game.state === 'home') turntable.rotation.y += dt * .25;
@@ -1324,6 +1330,15 @@ window.__REPAIR3D__ = {
   characters: () => Object.keys(CRITTERS),
   get state() { return game.state; },
   get tool() { return game.tool; },
+  game,
+  previewCritter,
+  startVisit,
+  renderer,
+  scene,
+  camera,
+  holder,
+  turntable,
+  fixed,
   damages: () => game.damages.map((d) => ({ type: d.type, done: d.done })),
   remaining: () => game.damages.filter((d) => !d.done).length,
   screen: (i) => { const d = game.damages[i]; const s = screenOf(d.anchor); return { x: s.x, y: s.y, facing: facing(d.anchor), type: d.type, done: d.done }; },
