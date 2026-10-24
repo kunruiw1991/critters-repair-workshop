@@ -1,6 +1,7 @@
 {
   "repository": "https://github.com/kunruiw1991/smiling-critters-assets",
   "commit": "9caee635c6fcfefec8c398761bb55f942237dd48",
+  "nightmarePlushReference": "https://qtplushies.com/products/catnap?variant=46189051150393",
   "references": [
     {
       "image": "images/008_DogDay_Plushie.webp",
@@ -33,7 +34,71 @@
     {
       "image": "images/053_KickinChicken.webp",
       "local": "icons/053_KickinChicken.webp"
+    },
+    {
+      "image": "https://qtplushies.com/products/catnap?variant=46189051150393 (45cm tall 4-legged Monster/Nightmare CatNap plush)",
+      "local": "icons/nightmare_catnap.webp"
+    },
+    {
+      "image": "images/580_BiggerBodyDogDayPlush.webp",
+      "local": "icons/nightmare_dogday.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (Hoppy Hopscotch)",
+      "local": "icons/nightmare_hoppyhopscotch.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (Bubba Bubbaphant)",
+      "local": "icons/nightmare_bubbabubbaphant.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (CraftyCorn)",
+      "local": "icons/nightmare_craftycorn.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (PickyPiggy)",
+      "local": "icons/nightmare_pickypiggy.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (Bobby BearHug)",
+      "local": "icons/nightmare_bobbybearhug.webp"
+    },
+    {
+      "image": "3D 45cm Nightmare Smiling Critter Studio Render (KickinChicken)",
+      "local": "icons/nightmare_kickinchicken.webp"
+    },
+    {
+      "image": "images/172_Baba_Chops_Official_Mob_Store_Plush_9in_Studio_Main.webp",
+      "local": "icons/babachops.webp"
+    },
+    {
+      "image": "images/660_IckyLickyPlushie.webp",
+      "local": "icons/ickylicky.webp"
+    },
+    {
+      "image": "images/739_RabieBat.webp",
+      "local": "icons/rabiebaby.webp"
+    },
+    {
+      "image": "images/095_Allister_Gator_Plush_duh.webp",
+      "local": "icons/allistergator.webp"
+    },
+    {
+      "image": "images/751_SimonSmokePlush1.webp",
+      "local": "icons/simonsmoke.webp"
+    },
+    {
+      "image": "images/725_PoePlush1.webp",
+      "local": "icons/poe.webp"
+    },
+    {
+      "image": "images/769_Toullie_plush.webp",
+      "local": "icons/touille.webp"
+    },
+    {
+      "image": "images/695_MaggieMakoPlush1.webp",
+      "local": "icons/maggiemako.webp"
     }
   ],
-  "modelNotes": "Procedural 3D plush models matching library colors, wide smiles, silhouettes, and individual pendants. Original reference images are used as selection portraits."
+  "modelNotes": "Includes procedural 3D plush models for all 8 classic Smiling Critters, all 8 larger 45cm 4-legged arched-back Nightmare Smiling Critters (modeled after the qtplushies 45cm Monster CatNap plush), and all 8 Chapter 4 Nightmare Critters."
 }

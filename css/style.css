@@ -130,7 +130,20 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
 @media(max-width:600px){.patient{width:calc(33.33% - 6px)}.patient b{font-size:11px;min-height:28px}.patient span{font-size:10px}.homecard{max-height:calc(100dvh - 88px);margin-top:52px}}
 
 #home .homecard{display:flex;flex-direction:column;overflow:hidden}
-#home .homecard h1,#home .homecard p,.home-actions{flex-shrink:0}
+#home .homecard h1,#home .homecard p,.cat-tabs,.home-actions{flex-shrink:0}
 #home .patients{min-height:0;overflow-y:auto;align-content:flex-start;padding:4px}
 .home-actions{padding-top:4px}
 .tk-head{min-width:0}.tk-head>div{min-width:0}.tk-head b{overflow-wrap:anywhere}
+
+/* Category filter pills & 45cm Nightmare plush badges */
+.cat-tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 auto 12px}
+.cat-tab{padding:7px 14px;border-radius:999px;background:#fff;color:var(--ink);font-weight:800;font-size:13px;box-shadow:0 2px 8px rgba(60,40,20,.08);border:2px solid transparent;transition:all .2s}
+.cat-tab.sel{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(123,107,214,.35)}
+.patient{position:relative}
+.patient.nightmare-card{background:linear-gradient(180deg,#fffdf9 0%,#f5eeff 100%)}
+.patient .sz-badge{display:inline-block;margin-top:3px;padding:2px 7px;border-radius:999px;background:#efe6ff;color:#5b359c;font-size:10px;font-weight:800}
+@media(max-width:600px){
+  .cat-tabs{gap:5px;margin-bottom:8px}
+  .cat-tab{padding:5px 9px;font-size:11px}
+  .patient .sz-badge{font-size:9px;padding:1px 5px}
+}

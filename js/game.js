@@ -6,6 +6,7 @@ import { VOICE_CLIPS } from './voices/manifest.js';
 import { buildSunnyFox } from './characters/SunnyFox.js';
 import { buildLunaBat } from './characters/LunaBat.js';
 import { buildSmilingCritter, SMILING_CRITTERS } from './characters/SmilingCritters.js';
+import { buildNightmareCritter, ALL_NIGHTMARE_CRITTERS } from './characters/NightmareCritters.js';
 import { buildPoppyDash } from './characters/PoppyDash.js';
 
 const THREE = window.THREE;
@@ -18,19 +19,19 @@ const ease = (t) => 1 - Math.pow(1 - clamp01(t), 3);
 /* ============================== Data ============================== */
 const CRITTERS = {
   lunabat: {
-    name: 'LunaBat', who: '你的伙伴', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
+    name: 'LunaBat', who: '你的伙伴', group: 'classic', icon: 'icons/critter_01_lunabat.jpg', build: buildLunaBat, fur: '#3a2278',
     thread: '#c9a8f2', pendantKey: 'moonStarPendant', pendantIcon: '🌙', earSide: 'leftEar',
     hello: '哎呀，飞过森林的时候，我弄得脏兮兮的。帮我修好吧！',
     thanks: '我又变得软乎乎啦！我们一起飞向月亮吧！'
   },
   sunnyfox: {
-    name: 'SunnyFox', who: '妈妈的伙伴', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
+    name: 'SunnyFox', who: '妈妈的伙伴', group: 'classic', icon: 'icons/critter_02_sunnyfox.jpg', build: buildSunnyFox, fur: '#e89125',
     thread: '#f07c78', pendantKey: 'lanternPendant', pendantIcon: '🏮', earSide: 'rightEar',
     hello: '走过泥泞小路，我的小灯笼不亮了。帮帮妈妈的伙伴吧！',
     thanks: '小灯笼又亮起来啦！谢谢你这么细心地照顾我！'
   },
   poppydash: {
-    name: 'PoppyDash', who: '爸爸的伙伴', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
+    name: 'PoppyDash', who: '爸爸的伙伴', group: 'classic', icon: 'icons/critter_03_poppydash.jpg', build: buildPoppyDash, fur: '#34353d',
     thread: '#f2c14e', pendantKey: 'popcornPendant', pendantIcon: '🍿', earSide: 'rightEar',
     hello: '我跑得太快，扑通一下掉进了水坑！帮爸爸的伙伴补一补吧！',
     thanks: '又变得蓬松啦！谢谢你，我们一起跑步、分享爆米花吧！'
@@ -49,8 +50,25 @@ const FRIEND_STORIES = {
 };
 for (const [id, cfg] of Object.entries(SMILING_CRITTERS)) {
   const [who, pendantIcon, hello, thanks] = FRIEND_STORIES[id];
-  CRITTERS[id] = {name: cfg.name, who, icon: `icons/${cfg.ref}`, build: () => buildSmilingCritter(id),
+  CRITTERS[id] = {name: cfg.name, who, group: 'classic', icon: `icons/${cfg.ref}`, build: () => buildSmilingCritter(id),
     fur: cfg.fur, thread: cfg.accent, pendantKey: 'smilingPendant', pendantIcon, earSide: 'leftEar', hello, thanks};
+}
+for (const [id, cfg] of Object.entries(ALL_NIGHTMARE_CRITTERS)) {
+  CRITTERS[id] = {
+    name: cfg.name,
+    who: cfg.who,
+    group: cfg.group,
+    isNightmare45cm: true,
+    icon: `icons/${cfg.ref}`,
+    build: () => buildNightmareCritter(id),
+    fur: cfg.fur,
+    thread: cfg.accent,
+    pendantKey: 'smilingPendant',
+    pendantIcon: cfg.pendantIcon || '🌙',
+    earSide: 'leftEar',
+    hello: cfg.hello,
+    thanks: cfg.thanks
+  };
 }
 
 const TOOLS = [
@@ -242,7 +260,8 @@ const moonGlow = new THREE.PointLight('#9fb4ff', 3, 7, 1.5); moonGlow.position.s
 
 // Family portraits
 const loader = new THREE.TextureLoader();
-Object.values(CRITTERS).forEach((c, i) => {
+['lunabat', 'sunnyfox', 'poppydash'].forEach((k, i) => {
+  const c = CRITTERS[k];
   const f = new THREE.Group(); f.position.set(-.95 + i * 0.95, 3.75, -2.53); f.rotation.z = [-.05, .02, .06][i]; room.add(f);
   const border = new THREE.Mesh(new THREE.BoxGeometry(.78, .78, .06), std({ color: ['#b9a2e6', '#f2b36a', '#8a8d99'][i], roughness: .5 }));
   border.castShadow = true; f.add(border);
@@ -495,7 +514,7 @@ function speakDevice(text) {
 
 /* ============================== Game state ============================== */
 const game = {
-  state: 'home', sel: 'lunabat', critter: null, meta: null, tool: null, paused: false,
+  state: 'home', sel: 'nightmare_catnap', filter: 'all', critter: null, meta: null, tool: null, paused: false,
   damages: [], total: 0, fixedCount: 0, flat: 0, flatTarget: 0, faded: 0, fadedActive: false, pendantShine: 1,
   ear: null, eye: null, anim: 'idle', t: 0, heartIn: false, accessories: new Set(), before: null, arrive: 0
 };
@@ -510,6 +529,7 @@ function buildCritter(id) {
   const p = root.parts;
   [p.eyes, p.muzzle, p.zipper, p.nose, p[CRITTERS[id].pendantKey], p.pilotGear].forEach((g) => g && g.traverse((o) => { o.userData.noDecal = true; }));
   root.userData.base = {};
+  root.userData.baseScale = CRITTERS[id].isNightmare45cm ? 1.12 : 1;
   ['head', 'leftArm', 'rightArm', 'leftWingArm', 'rightWingArm', 'leftEar', 'rightEar', 'tail'].forEach((k) => {
     if (p[k]) root.userData.base[k] = { r: p[k].rotation.clone(), p: p[k].position.clone() };
   });
@@ -668,7 +688,7 @@ function previewCritter(id) {
   clearCritter();
   game.meta = CRITTERS[id];
   const c = buildCritter(id);
-  c.position.y = .97; holder.add(c);
+  c.position.y = game.meta.isNightmare45cm ? 1.07 : .97; holder.add(c);
   game.critter = c; game.anim = 'awake'; game.flat = 1; game.flatTarget = 1;
 }
 function startVisit() {
@@ -677,7 +697,7 @@ function startVisit() {
   const id = game.sel; clearCritter();
   game.meta = CRITTERS[id];
   const c = buildCritter(id);
-  c.position.y = .97; holder.add(c); holder.rotation.y = 0; turntable.rotation.y = 0;
+  c.position.y = game.meta.isNightmare45cm ? 1.07 : .97; holder.add(c); holder.rotation.y = 0; turntable.rotation.y = 0;
   game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0; game.checkupStarted = false;
   c.updateMatrixWorld(true);
 
@@ -1121,9 +1141,21 @@ function showCard(after) {
 
 /* ============================== Home ============================== */
 function renderPatients() {
-  $('patients').innerHTML = Object.entries(CRITTERS).map(([k, c]) => `<button type="button" class="patient ${k === game.sel ? 'sel' : ''}" data-k="${k}">
-    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span><div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></button>`).join('');
+  const rank = { nightmare_smiling: 0, nightmare_critters: 1, classic: 2 };
+  const entries = Object.entries(CRITTERS)
+    .filter(([, c]) => game.filter === 'all' || c.group === game.filter)
+    .sort((a, b) => (rank[a[1].group] ?? 9) - (rank[b[1].group] ?? 9));
+  $('patients').innerHTML = entries.map(([k, c]) => `<button type="button" class="patient ${c.isNightmare45cm ? 'nightmare-card' : ''} ${k === game.sel ? 'sel' : ''}" data-k="${k}">
+    <img src="${c.icon}" alt="${c.name}"><b>${c.name}</b><span>${c.who}</span>${c.isNightmare45cm ? '<div class="sz-badge">45cm 大长腿</div>' : ''}<div class="st">${save.fixed[k] ? '★'.repeat(Math.min(5, save.fixed[k])) : ''}</div></button>`).join('');
   $('patients').querySelectorAll('.patient').forEach((el) => el.onclick = () => { game.sel = el.dataset.k; tone(600, 760, .12, .03); renderPatients(); previewCritter(game.sel); });
+  document.querySelectorAll('#catTabs .cat-tab').forEach((btn) => {
+    btn.classList.toggle('sel', btn.dataset.cat === game.filter);
+    btn.onclick = () => {
+      game.filter = btn.dataset.cat;
+      tone(540, 700, .1, .03);
+      renderPatients();
+    };
+  });
 }
 function goHome() {
   stopSpeech();
@@ -1206,8 +1238,9 @@ function animateCritter(c, dt, t) {
   game.flat += (game.flatTarget - game.flat) * Math.min(1, dt * 2.5);
   game.wobble = (game.wobble || 0) * Math.pow(.05, dt);
   const f = ease(game.flat), w = Math.sin(t * 14) * (game.wobble || 0);
-  let sy = 1 - .26 * (1 - f) - w, sxz = 1 + .12 * (1 - f) + w;
-  let y = .97 - .2 * (1 - f);
+  const bs = c.userData.baseScale || 1;
+  let sy = (1 - .26 * (1 - f) - w) * bs, sxz = (1 + .12 * (1 - f) + w) * bs;
+  let y = (bs > 1 ? 1.07 : .97) - .2 * (1 - f);
   if (game.anim === 'asleep') {
     const br = Math.sin(t * 1.3) * .012;
     sy += br;

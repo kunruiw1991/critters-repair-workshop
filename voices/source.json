@@ -5,6 +5,6 @@
   "pitch": "+3Hz",
   "type": "synthetic",
   "generator": "edge-tts 7.3.1",
-  "lines": 24,
+  "lines": 56,
   "description": "Bright, lively Mandarin synthetic voice; not Luo Tianyi."
 }

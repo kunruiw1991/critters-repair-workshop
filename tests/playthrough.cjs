@@ -40,15 +40,15 @@ fs.mkdirSync(out, {recursive: true});
  await page.addInitScript(()=>{window.__spoken=[]; speechSynthesis.speak=(u)=>{window.__spoken.push({text:u.text,lang:u.lang});};});
  await page.goto(process.env.GAME_URL || 'http://127.0.0.1:8765');await page.waitForFunction(()=>window.__REPAIR3D__);
  assert.equal(await page.evaluate(()=>__VOICE_TEST__()),'Microsoft Xiaoyi Online (Natural)');
- const recordings=await page.evaluate(()=>__AUDIO_CHECK__());assert.equal(recordings.length,24);
+ const recordings=await page.evaluate(()=>__AUDIO_CHECK__());assert.equal(recordings.length,56);
  for(const r of recordings)assert(r.duration>1 && r.duration<20,r.src);
  await page.click('#voicePreviewBtn');
  await page.waitForFunction(()=>__VOICE_STATE__()?.time>0.2);
  assert.equal(await page.evaluate(()=>__VOICE_STATE__().paused),false);
- console.log('All 24 Mandarin MP3 recordings decoded; preview playback PASS');
+ console.log('All 56 Mandarin MP3 recordings decoded; preview playback PASS');
  if(process.env.VOICE_ONLY){await browser.close();return;}
  assert.equal(await page.locator('html').getAttribute('lang'),'zh-CN');
- const ids=await page.evaluate(()=>__REPAIR3D__.characters());assert.equal(ids.length,11);
+ const ids=await page.evaluate(()=>__REPAIR3D__.characters());assert.equal(ids.length,27);
  const visitIds=process.env.CRITTERS ? process.env.CRITTERS.split(',') : ids;
  for(const id of visitIds){
   await page.click('.patient[data-k='+id+']');await page.click('#startBtn');await page.waitForTimeout(2100);
@@ -65,7 +65,7 @@ fs.mkdirSync(out, {recursive: true});
  }
  await page.reload();await page.waitForFunction(()=>window.__REPAIR3D__);assert.equal(await page.evaluate(()=>__REPAIR3D__.save().shelf.length),Math.min(visitIds.length,6));
  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(out,'repair-mobile.png')});
- assert.equal(await page.locator('.patient').count(),11);
+ assert.equal(await page.locator('.patient').count(),27);
  for(const id of ids) {const box=await page.locator('.patient[data-k='+id+']').boundingBox();assert(box.x>=0 && box.x+box.width<=390);}
  await page.click('#startBtn');await page.click('#pauseBtn');assert.equal(await page.locator('#pauseVeil').isVisible(),true);await page.click('#resumeBtn');await page.click('#stopBtn');assert.equal(await page.evaluate(()=>__REPAIR3D__.state),'home');
  await page.evaluate(()=>{const key='critterRepair3D_v1',s=JSON.parse(localStorage.getItem(key));s.shelf.push({id:'cloverbunny',acc:[]});localStorage.setItem(key,JSON.stringify(s));});
