@@ -54,10 +54,11 @@ Modeled after Poppy Playtime Chapter 4 Phase-2 Nightmare Critters monster animat
 
 ## How it plays
 - Filter the patient menu by category (`✨ 全部伙伴 (27)`, `🌙 巨型怪兽微笑伙伴 (8)`, `🦇 巨型怪兽夜梦团 (8)`, `☀️ 经典微笑与家人 (11)`).
-- Every visit rolls **random damage** on the 3D plush: mud, dust and cobwebs, prickly burrs, torn seams, plus 3 surprise problems (lost button eye, loose ear, flat stuffing, faded colors, dull pendant).
+- Every visit rolls **random damage** on the 3D plush: mud, dust and cobwebs, prickly burrs, torn seams, tangled fur, torn fabric patches, **red bumpy eczema rash (`🔴 红红的湿疹`)**, **wet pants (`🩲 尿湿裤子`)**, plus 3 surprise problems (lost button eye, loose ear, flat stuffing, faded colors, dull pendant) and 3 stethoscope checkups.
 - Fix things **in any order**. Drag to spin the turntable; tap a ticket chip and the critter turns to show you that spot.
-- **13 tools:** 🧹 brush, 🧽 sponge (leaves wet spots), 💨 dryer, 🪡 needle (4 stitches, also sews the ear back), 🔘 button eye, ☁️ cotton, 🖌️ color spray, 🧤 polish, tweezers, 🪮 fluff comb, 🩹 fabric patch, 🩺 stethoscope checkup, and the final 💝 wind-up heart that wakes the critter up.
-- Dress-up (bow, flowers, party hat, scarf, star), then the critter hops onto the **Happy Shelf**. Before/after photo card. Shelf and stars are saved on the device.
+- **15 tools:** 🧹 brush, 🧽 sponge (leaves wet spots), 💨 dryer, 🪡 needle (4 stitches, also sews the ear back), 🔘 button eye, ☁️ cotton, 🖌️ color spray, 🧤 polish, 🥢 tweezers, 🪮 fluff comb, 🩹 fabric patch, **🧴 moisture cream (`保湿霜`)** to soothe red eczema rash patches, **🩲 cozy 3D diaper (`小尿布`)** that dries wet pants and fits a 3D white diaper with side fastener tabs onto the critter, 🩺 stethoscope checkup, and the final 💝 wind-up heart that wakes the critter up.
+- **💨 Floating Fart & 🍄 3D Mushroom-Cloud Mega Fart Button (`0/10` → `10/10`):** Tap `💨 放小屁` during repair or dress-up for playful small 3D gas puffs and comedic WebAudio toots (`1/10`..`10/10`). Once charged to `10/10`, the button glows (`🍄 蘑菇云大屁!`) and the next tap unleashes a giant rising 3D mushroom cloud (`stem` column + billowing `cap` + expanding `shockwave` ring) before resetting to `0/10`.
+- Dress-up (bow, flowers, party hat, scarf, star), then the critter hops onto the **Happy Shelf** (wearing its cozy 3D diaper and accessories!). Before/after photo card. Shelf and stars are saved on the device.
 - Interface and dialogue are in simplified Chinese. All 56 spoken lines are bundled as MP3 recordings using the lively Mandarin Xiaoyi synthetic voice, so playback does not depend on installed device voices.
 
 ## Tech

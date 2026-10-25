@@ -52,7 +52,13 @@ fs.mkdirSync(out, {recursive: true});
  const visitIds=process.env.CRITTERS ? process.env.CRITTERS.split(',') : ids;
  for(const id of visitIds){
   await page.click('.patient[data-k='+id+']');await page.click('#startBtn');await page.waitForTimeout(2100);
-  const log=await page.evaluate(()=>__PLAYTEST__());assert(log.includes('tangle'));assert(log.includes('patch'));assert.equal(log.filter(x=>x==='checkup').length,3);
+  for(let f=1;f<=10;f++){await page.click('#fartBtn');assert.equal(await page.locator('#fartCount').textContent(),f+'/10');}
+  assert.equal(await page.evaluate(()=>document.getElementById('fartBtn').classList.contains('mega')),true);
+  await page.click('#fartBtn');
+  assert.equal(await page.locator('#fartCount').textContent(),'0/10');
+  assert.equal(await page.evaluate(()=>__REPAIR3D__.mushroomClouds().length>0),true);
+  const log=await page.evaluate(()=>__PLAYTEST__());assert(log.includes('tangle'));assert(log.includes('patch'));assert(log.includes('eczema'));assert(log.includes('wet_pants'));assert.equal(log.filter(x=>x==='checkup').length,3);
+  assert.equal(await page.evaluate(()=>__REPAIR3D__.hasDiaper()),true);
   for(const type of ['eye','ear','flat','faded','pendant'])assert(log.includes(type),id+' missed '+type);
   assert.equal(await page.locator('[data-t=heart]').count(),1);
   await page.evaluate(()=>{const R=__REPAIR3D__;R.selectTool('heart');const p=R.critterScreen();document.getElementById('gl').dispatchEvent(new PointerEvent('pointerdown',{clientX:p.x,clientY:p.y,bubbles:true}));window.dispatchEvent(new PointerEvent('pointerup'));});

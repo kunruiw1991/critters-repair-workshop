@@ -147,3 +147,40 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:4px}
   .cat-tab{padding:5px 9px;font-size:11px}
   .patient .sz-badge{font-size:9px;padding:1px 5px}
 }
+
+/* Floating Fart & 3D Mushroom-Cloud Mega Fart button */
+#fartBtn{
+  position:fixed;right:18px;top:86px;z-index:9;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  min-width:118px;padding:10px 14px 9px;border-radius:22px;
+  background:linear-gradient(180deg,#fffef6 0%,#eef9d8 100%);
+  border:3px solid #9ad94b;box-shadow:var(--shadow);
+  transition:transform .2s,border-color .25s,box-shadow .25s,background .25s;
+}
+#fartBtn:hover{transform:translateY(-2px) scale(1.03)}
+#fartBtn:active{transform:scale(.93)}
+#fartBtn .fart-icon{font-size:28px;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,.15))}
+#fartBtn .fart-info{display:flex;align-items:baseline;gap:6px}
+#fartBtn .fart-info b{font-size:14px;font-weight:900;color:#3d5a16}
+#fartBtn .fart-info small{font-size:13px;font-weight:900;color:#5a7d24;background:rgba(154,217,75,.28);padding:1px 7px;border-radius:999px}
+#fartBtn .fart-bar{width:100%;height:8px;border-radius:999px;background:#dfe8ce;overflow:hidden}
+#fartBtn .fart-bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#8ce038,#f3c14d);transition:width .25s ease}
+#fartBtn.mega{
+  background:linear-gradient(180deg,#fff6d6 0%,#ffd875 100%);
+  border-color:#ff7b29;
+  animation:megaPulse .9s ease-in-out infinite;
+}
+#fartBtn.mega .fart-info b{color:#8c2d00}
+#fartBtn.mega .fart-info small{background:#ff7b29;color:#fff}
+#fartBtn.mega .fart-bar i{background:linear-gradient(90deg,#ff922b,#ff3b30)}
+@keyframes megaPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,123,41,.45),var(--shadow)}
+  50%{transform:scale(1.07);box-shadow:0 0 0 10px rgba(255,123,41,0),0 8px 26px rgba(255,95,20,.45)}
+}
+@media(max-width:600px){
+  #fartBtn{right:8px;top:62px;min-width:92px;padding:7px 9px;border-radius:16px}
+  #fartBtn .fart-icon{font-size:22px}
+  #fartBtn .fart-info b{font-size:11px}
+  #fartBtn .fart-info small{font-size:10px;padding:1px 5px}
+}
+

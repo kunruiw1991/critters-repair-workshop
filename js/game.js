@@ -83,27 +83,31 @@ const TOOLS = [
   { id: 'cloth', icon: '🧤', name: '擦亮手套', hold: true },
   { id: 'comb', icon: '🪮', name: '绒毛梳', hold: true },
   { id: 'patch', icon: '🩹', name: '暖心补丁' },
+  { id: 'moisture', icon: '🧴', name: '保湿霜', hold: true },
+  { id: 'diaper', icon: '🩲', name: '小尿布' },
   { id: 'checkup', icon: '🩺', name: '抱抱检查' },
   { id: 'heart', icon: '💝', name: '唤醒爱心' }
 ];
 const TOOL = Object.fromEntries(TOOLS.map((t) => [t.id, t]));
 
 const DMG = {
-  tangle:  { icon: '🪮', tool: 'comb', label: '打结的绒毛' },
-  patch:   { icon: '🩹', tool: 'patch', label: '磨破的布料' },
-  checkup: { icon: '🩺', tool: 'checkup', label: '抱抱检查' },
-  dust:    { icon: '🕸️', tool: 'brush',    label: '灰尘和蛛网' },
-  mud:     { icon: '🟤', tool: 'sponge',   label: '脏脏的泥巴' },
-  wet:     { icon: '💧', tool: 'dryer',    label: '湿湿的水滴' },
-  burr:    { icon: '🌰', tool: 'tweezers', label: '粘人的小刺球' },
-  tear:    { icon: '🧵', tool: 'needle',   label: '松开的缝线' },
-  ear:     { icon: '👂', tool: 'needle',   label: '松开的耳朵' },
-  eye:     { icon: '👁️', tool: 'button',   label: '掉落的眼睛' },
-  flat:    { icon: '🎈', tool: 'cotton',   label: '扁扁的身体' },
-  faded:   { icon: '🩶', tool: 'paint',    label: '褪色的绒毛' },
-  pendant: { icon: '💎', tool: 'cloth',    label: '暗暗的小挂饰' }
+  tangle:    { icon: '🪮', tool: 'comb',     label: '打结的绒毛' },
+  patch:     { icon: '🩹', tool: 'patch',    label: '磨破的布料' },
+  eczema:    { icon: '🔴', tool: 'moisture', label: '红红的湿疹' },
+  wet_pants: { icon: '🩲', tool: 'diaper',   label: '尿湿裤子' },
+  checkup:   { icon: '🩺', tool: 'checkup',  label: '抱抱检查' },
+  dust:      { icon: '🕸️', tool: 'brush',    label: '灰尘和蛛网' },
+  mud:       { icon: '🟤', tool: 'sponge',   label: '脏脏的泥巴' },
+  wet:       { icon: '💧', tool: 'dryer',    label: '湿湿的水滴' },
+  burr:      { icon: '🌰', tool: 'tweezers', label: '粘人的小刺球' },
+  tear:      { icon: '🧵', tool: 'needle',   label: '松开的缝线' },
+  ear:       { icon: '👂', tool: 'needle',   label: '松开的耳朵' },
+  eye:       { icon: '👁️', tool: 'button',   label: '掉落的眼睛' },
+  flat:      { icon: '🎈', tool: 'cotton',   label: '扁扁的身体' },
+  faded:     { icon: '🩶', tool: 'paint',    label: '褪色的绒毛' },
+  pendant:   { icon: '💎', tool: 'cloth',    label: '暗暗的小挂饰' }
 };
-const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant', 'tangle', 'patch', 'checkup'];
+const DMG_ORDER = ['dust', 'mud', 'wet', 'burr', 'tear', 'ear', 'eye', 'flat', 'faded', 'pendant', 'tangle', 'patch', 'eczema', 'wet_pants', 'checkup'];
 
 const CHEERS = ['啊，好多啦！', '耶，谢谢你！', '这样好舒服呀！', '好开心！', '你是最棒的小修理师！', '哇，亮晶晶！'];
 const TICKLES = ['嘻嘻，好痒呀！', '你好，小伙伴！', '啵！', '咯咯咯！'];
@@ -462,9 +466,25 @@ function loopNoise(key, on, freq = 700, type = 'lowpass', gain = .045) {
 let lastRub = 0;
 function rubSfx(tool) {
   const now = performance.now(); if (now - lastRub < 140) return; lastRub = now;
-  if (tool === 'brush') noise(2600, .9, .04, .13);
+  if (tool === 'brush' || tool === 'comb') noise(2600, .9, .04, .13);
   if (tool === 'sponge') { noise(850, 1.3, .05, .16); if (Math.random() < .4) tone(rnd(500, 800), 1000, .08, .03); }
   if (tool === 'cloth') { noise(4200, 2, .025, .1); if (Math.random() < .3) tone(1760, 2200, .18, .018); }
+  if (tool === 'moisture') { noise(1350, 1.4, .032, .14); if (Math.random() < .45) tone(rnd(760, 1120), 1380, .12, .026, 'sine'); }
+}
+function playFartSfx(mega = false) {
+  if (!soundOn || !audio()) return;
+  if (!mega) {
+    tone(rnd(165, 225), rnd(62, 88), .26, .08, 'sawtooth');
+    tone(rnd(120, 155), rnd(52, 72), .22, .06, 'triangle', .05);
+    noise(260, 2.2, .055, .24, 'bandpass');
+  } else {
+    tone(145, 36, .95, .14, 'sawtooth');
+    tone(92, 26, 1.15, .16, 'triangle', .04);
+    tone(210, 48, .75, .09, 'square', .08);
+    noise(150, 1.1, .14, 1.15, 'lowpass');
+    noise(420, 1.8, .085, .8, 'bandpass');
+    setTimeout(() => chime([523, 659, 784, 1047], .12, .045), 320);
+  }
 }
 // Bundled Xiaoyi Mandarin audio plays on every device; device speech is a fallback.
 let voiceChoices = [];
@@ -516,7 +536,8 @@ function speakDevice(text) {
 const game = {
   state: 'home', sel: 'nightmare_catnap', filter: 'all', critter: null, meta: null, tool: null, paused: false,
   damages: [], total: 0, fixedCount: 0, flat: 0, flatTarget: 0, faded: 0, fadedActive: false, pendantShine: 1,
-  ear: null, eye: null, anim: 'idle', t: 0, heartIn: false, accessories: new Set(), before: null, arrive: 0
+  ear: null, eye: null, anim: 'idle', t: 0, heartIn: false, accessories: new Set(), before: null, arrive: 0,
+  fartCharge: 0, fartBounce: 0, diaperFitted: false
 };
 const raycaster = new THREE.Raycaster();
 const tmpV = new THREE.Vector3(), tmpV2 = new THREE.Vector3(), tmpQ = new THREE.Quaternion();
@@ -575,6 +596,14 @@ const M = {
   dust: std({ color: '#d2cbc0', roughness: 1, transparent: true, opacity: .96 }),
   web: new THREE.LineBasicMaterial({ color: '#f4f1ea', transparent: true, opacity: .8 }),
   wet: new THREE.MeshPhysicalMaterial({ color: '#a8dcff', roughness: .04, metalness: 0, transparent: true, opacity: .78, clearcoat: 1, emissive: '#3b7fb3', emissiveIntensity: .25 }),
+  peeStain: new THREE.MeshPhysicalMaterial({ color: '#f6d54a', roughness: .06, metalness: 0, transparent: true, opacity: .84, clearcoat: 1, emissive: '#c49214', emissiveIntensity: .24 }),
+  eczemaBase: std({ color: '#f26b83', roughness: .88, transparent: true, opacity: .78 }),
+  eczemaBump: std({ color: '#e62e4d', emissive: '#9e142b', emissiveIntensity: .25, roughness: .55 }),
+  diaperWhite: std({ color: '#ffffff', roughness: .72, metalness: .02 }),
+  diaperTrim: std({ color: '#d6eeff', roughness: .62 }),
+  tabBlue: std({ color: '#5cb8ff', roughness: .48 }),
+  tabYellow: std({ color: '#ffd43b', roughness: .45 }),
+  badgePink: std({ color: '#ff8fab', roughness: .48 }),
   slit: std({ color: '#261b2a', roughness: .9 }), cottonM: std({ color: '#fffdf7', roughness: 1 }),
   burr: std({ color: '#7d6b33', roughness: .95 }), burr2: std({ color: '#5f5226', roughness: .95 })
 };
@@ -591,6 +620,16 @@ function makeDecal(type) {
     const hole = new THREE.Mesh(new THREE.CircleGeometry(.10, 24), M.slit); g.add(hole);
     const backing = new THREE.Mesh(new THREE.CircleGeometry(.085, 24), M.cottonM);
     backing.position.z = .004; g.add(backing); g.userData.presses = 0;
+  } else if (type === 'eczema') {
+    const patch = new THREE.Mesh(new THREE.CircleGeometry(.095, 24), M.eczemaBase);
+    patch.position.z = .003; g.add(patch);
+    const ringPos = [[0, 0, .022], [-.036, .024, .019], [.038, .022, .019], [-.042, -.026, .018], [.040, -.028, .018], [0, .048, .017], [0, -.046, .017], [-.064, 0, .015], [.064, 0, .015], [.018, -.012, .021]];
+    ringPos.forEach(([bx, by, r], idx) => {
+      const bump = new THREE.Mesh(new THREE.SphereGeometry(r, 14, 10), M.eczemaBump);
+      bump.scale.z = .65;
+      bump.position.set(bx, by, .012 + (idx % 3) * .003);
+      g.add(bump);
+    });
   } else if (type === 'mud') {
     for (let i = 0; i < 4; i++) {
       const b = new THREE.Mesh(new THREE.SphereGeometry(rnd(.045, .085), 20, 14), i ? M.mud : M.mud2);
@@ -633,6 +672,313 @@ function addDamage(type, hit) {
   const d = { type, anchor: g, hp: 1, done: false, id: game.damages.length };
   game.damages.push(d);
   return d;
+}
+
+/* ---------- lower-body wet_pants decal & 3D white diaper mesh ---------- */
+function pelvisSpec(id, meta) {
+  if (!meta || !meta.isNightmare45cm) {
+    const isFamily = id === 'lunabat' || id === 'sunnyfox' || id === 'poppydash';
+    return isFamily
+      ? { y: -.25, z: .01, rx: .34, ry: .185, rz: .30, frontY: -.23, frontZ: .29 }
+      : { y: -.23, z: .01, rx: .305, ry: .175, rz: .255, frontY: -.21, frontZ: .25 };
+  }
+  const ncfg = ALL_NIGHTMARE_CRITTERS[id] || {};
+  const p = ncfg.posture || 'biped_hound';
+  if (p === 'biped_rabbit' || p === 'biped_raptor' || p === 'biped_hound' || p === 'biped_hog') {
+    const hipY = p === 'biped_rabbit' ? .20 : .16;
+    const waistR = p === 'biped_hog' ? .21 : (p === 'biped_rabbit' ? .175 : .185);
+    return { y: hipY - .02, z: .02, rx: waistR * 1.32, ry: .175, rz: waistR * 1.28, frontY: hipY - .02, frontZ: waistR + .08 };
+  }
+  if (p === 'winged_dragon' || p === 'gothic_raven' || p === 'hunched_rat') {
+    return { y: .02, z: -.16, rx: .27, ry: .185, rz: .26, frontY: .02, frontZ: .12 };
+  }
+  if (p === 'crouching_frog' || p === 'sprawling_gator') {
+    return { y: -.38, z: -.12, rx: .31, ry: .18, rz: .27, frontY: -.38, frontZ: .16 };
+  }
+  if (p === 'feline_stalker') {
+    return { y: -.02, z: -.20, rx: .28, ry: .19, rz: .26, frontY: -.02, frontZ: .10 };
+  }
+  if (p === 'elephant_behemoth' || p === 'equine_unicorn') {
+    return { y: -.04, z: -.18, rx: .30, ry: .195, rz: .28, frontY: -.04, frontZ: .12 };
+  }
+  return { y: -.18, z: -.16, rx: .30, ry: .19, rz: .27, frontY: -.18, frontZ: .12 };
+}
+function addWetPantsDamage(c, id, meta) {
+  const spec = pelvisSpec(id, meta);
+  const g = new THREE.Group();
+  g.name = 'wetPantsDecal';
+  g.position.set(0, spec.frontY, spec.frontZ);
+  const stain = new THREE.Mesh(new THREE.SphereGeometry(.11, 20, 16), M.peeStain);
+  stain.scale.set(1.35, .95, .28);
+  g.add(stain);
+  const rim = new THREE.Mesh(new THREE.SphereGeometry(.13, 20, 14), M.wet);
+  rim.scale.set(1.45, 1.05, .20);
+  rim.position.z = -.004;
+  g.add(rim);
+  [[-.09, -.05, .02], [.09, -.04, .02], [0, -.09, .025], [-.05, .04, .025], [.06, .03, .025]].forEach(([dx, dy, dz]) => {
+    const drop = new THREE.Mesh(new THREE.SphereGeometry(.025, 14, 10), M.peeStain);
+    drop.scale.set(1, 1.35, .55);
+    drop.position.set(dx, dy, dz);
+    g.add(drop);
+  });
+  g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.userData.noDecal = true; } });
+  c.parts.torso.add(g);
+  const d = { type: 'wet_pants', anchor: g, hp: 1, done: false, id: game.damages.length };
+  game.damages.push(d);
+  return d;
+}
+function buildDiaperMesh(id, meta) {
+  const spec = pelvisSpec(id, meta);
+  const g = new THREE.Group();
+  g.name = 'critterDiaper';
+  g.position.set(0, spec.y, spec.z);
+
+  const shell = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 24), M.diaperWhite);
+  shell.name = 'diaperShell';
+  shell.scale.set(spec.rx * 1.14, spec.ry * 1.10, spec.rz * 1.18);
+  g.add(shell);
+
+  const waist = new THREE.Mesh(new THREE.TorusGeometry(1, .14, 14, 36), M.diaperTrim);
+  waist.name = 'diaperWaistband';
+  waist.rotation.x = Math.PI / 2;
+  waist.position.set(0, spec.ry * .62, 0);
+  waist.scale.set(spec.rx * 1.08, spec.rz * 1.12, spec.ry * .78);
+  g.add(waist);
+
+  const frontPad = new THREE.Mesh(new THREE.SphereGeometry(1, 22, 16), M.diaperWhite);
+  frontPad.name = 'diaperFrontPad';
+  frontPad.position.set(0, -spec.ry * .04, spec.rz * .88);
+  frontPad.scale.set(spec.rx * .74, spec.ry * .84, spec.rz * .40);
+  g.add(frontPad);
+
+  [-1, 1].forEach((s) => {
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(.48, .11, 10, 24), M.diaperTrim);
+    cuff.name = s < 0 ? 'leftLegCuff' : 'rightLegCuff';
+    cuff.position.set(s * spec.rx * .58, -spec.ry * .55, spec.rz * .12);
+    cuff.rotation.set(Math.PI * .38, s * .42, 0);
+    cuff.scale.set(spec.rx, spec.rz, spec.ry);
+    g.add(cuff);
+
+    const tabScale = Math.max(.72, spec.rx * 2.8);
+    const tab = new THREE.Mesh(new THREE.BoxGeometry(.055 * tabScale, .085 * tabScale, .11 * tabScale), M.tabBlue);
+    tab.name = s < 0 ? 'leftFastenerTab' : 'rightFastenerTab';
+    tab.position.set(s * spec.rx * 1.04, spec.ry * .22, spec.rz * .32);
+    tab.rotation.y = s * .35;
+    g.add(tab);
+
+    const btn = new THREE.Mesh(new THREE.SphereGeometry(.032 * tabScale, 12, 10), M.tabYellow);
+    btn.position.set(s * spec.rx * .86, spec.ry * .22, spec.rz * .68);
+    g.add(btn);
+  });
+
+  const badge = new THREE.Mesh(new THREE.OctahedronGeometry(Math.max(.038, spec.rx * .16), 0), M.badgePink);
+  badge.name = 'diaperFrontBadge';
+  badge.scale.set(1, 1, .45);
+  badge.position.set(0, spec.ry * .16, spec.rz * 1.20);
+  g.add(badge);
+
+  g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; o.userData.noDecal = true; } });
+  return g;
+}
+function attachDiaperMesh(c, id, meta, animate = true) {
+  if (!c || !c.parts || !c.parts.torso) return null;
+  const old = c.parts.torso.getObjectByName('critterDiaper');
+  if (old) c.parts.torso.remove(old);
+  const diaper = buildDiaperMesh(id, meta);
+  c.parts.torso.add(diaper);
+  game.diaperFitted = true;
+  if (animate) {
+    diaper.scale.setScalar(.05);
+    const t0 = performance.now();
+    const step = () => {
+      const k = Math.min(1, (performance.now() - t0) / 480);
+      const s = k < .75 ? (k / .75) * 1.14 : 1.14 - ((k - .75) / .25) * .14;
+      diaper.scale.setScalar(Math.max(.05, s));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    step();
+  }
+  return diaper;
+}
+
+/* ---------- 3D Fart & 3D Mushroom-Cloud Mega Fart ---------- */
+const fartClouds = [];
+function clearFartClouds() {
+  while (fartClouds.length) {
+    const c = fartClouds.pop();
+    if (c.parent) c.parent.remove(c);
+  }
+}
+function critterRearWorldPos() {
+  if (!game.critter) return new THREE.Vector3(0, .9, -.25);
+  const p = game.critter.parts.torso.getWorldPosition(new THREE.Vector3());
+  const back = new THREE.Vector3(0, -.12, -.32).applyAxisAngle(new THREE.Vector3(0, 1, 0), turntable.rotation.y);
+  return p.add(back);
+}
+function spawnSmallFart3D() {
+  const pos = critterRearWorldPos();
+  for (let i = 0; i < 9; i++) {
+    spawn(TEX.puff, pos.clone().add(new THREE.Vector3(rnd(-.08, .08), rnd(-.06, .06), rnd(-.08, .08))), {
+      vel: new THREE.Vector3(rnd(-.45, .45), rnd(.18, .65), rnd(-.55, -.12)),
+      life: rnd(1.0, 1.6),
+      size: rnd(.11, .20),
+      grow: 1.3,
+      opacity: .85,
+      color: pick(['#a9e34b', '#c0eb75', '#82c91e', '#d8f5a2'])
+    });
+  }
+  const g = new THREE.Group();
+  g.name = 'smallFartCloud';
+  g.position.copy(pos);
+  const puffMat = new THREE.MeshStandardMaterial({ color: '#a9e34b', emissive: '#5c940d', emissiveIntensity: .35, roughness: .7, transparent: true, opacity: .85 });
+  for (let i = 0; i < 4; i++) {
+    const m = new THREE.Mesh(new THREE.SphereGeometry(rnd(.07, .12), 14, 10), puffMat);
+    m.position.set(rnd(-.09, .09), rnd(-.05, .08), rnd(-.09, .05));
+    g.add(m);
+  }
+  g.userData = { isMega: false, t: 0, life: 1.15, mat: puffMat };
+  scene.add(g);
+  fartClouds.push(g);
+  return g;
+}
+function spawnMushroomCloudMegaFart() {
+  const cloud = new THREE.Group();
+  cloud.name = 'mushroomCloudMegaFart';
+  cloud.position.set(0, .10, -.52);
+
+  const stemMat = new THREE.MeshStandardMaterial({ color: '#b5f536', emissive: '#74b816', emissiveIntensity: .55, roughness: .6, transparent: true, opacity: .94 });
+  const capMat = new THREE.MeshStandardMaterial({ color: '#d8fc56', emissive: '#f59f00', emissiveIntensity: .62, roughness: .5, transparent: true, opacity: .96 });
+  const rimMat = new THREE.MeshStandardMaterial({ color: '#94d82d', emissive: '#f76707', emissiveIntensity: .52, roughness: .55, transparent: true, opacity: .92 });
+  const waveMat = new THREE.MeshStandardMaterial({ color: '#e9fac8', emissive: '#a9e34b', emissiveIntensity: .75, roughness: .4, transparent: true, opacity: .9, side: THREE.DoubleSide });
+
+  // 1. Rising 3D stem column
+  const stem = new THREE.Group();
+  stem.name = 'stem';
+  const col = new THREE.Mesh(new THREE.CylinderGeometry(.26, .42, 1.85, 24), stemMat);
+  col.position.y = .92;
+  stem.add(col);
+  for (let i = 0; i < 6; i++) {
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(.30 - i * .015, .10, 12, 22), rimMat);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = .28 + i * .27;
+    stem.add(ring);
+  }
+  cloud.add(stem);
+
+  // 2. Expanding glowing mushroom cap cloud
+  const cap = new THREE.Group();
+  cap.name = 'cap';
+  cap.position.y = 1.92;
+  const dome = new THREE.Mesh(new THREE.SphereGeometry(.88, 32, 24), capMat);
+  dome.scale.set(1.22, .72, 1.22);
+  cap.add(dome);
+  const underRim = new THREE.Mesh(new THREE.TorusGeometry(.78, .25, 16, 32), rimMat);
+  underRim.rotation.x = Math.PI / 2;
+  underRim.position.y = -.18;
+  cap.add(underRim);
+  for (let i = 0; i < 10; i++) {
+    const a = (i / 10) * Math.PI * 2;
+    const lobe = new THREE.Mesh(new THREE.SphereGeometry(.32, 16, 12), i % 2 ? capMat : rimMat);
+    lobe.position.set(Math.cos(a) * .76, -.05 + (i % 2) * .12, Math.sin(a) * .76);
+    cap.add(lobe);
+  }
+  const glowLight = new THREE.PointLight('#d8f5a2', 4.5, 6, 1.4);
+  glowLight.position.set(0, .2, .4);
+  cap.add(glowLight);
+  cloud.add(cap);
+
+  // 3. Ground shockwave ring
+  const shockwave = new THREE.Group();
+  shockwave.name = 'shockwave';
+  shockwave.position.y = .04;
+  const torusWave = new THREE.Mesh(new THREE.TorusGeometry(.68, .065, 12, 48), waveMat);
+  torusWave.rotation.x = Math.PI / 2;
+  shockwave.add(torusWave);
+  const innerRing = new THREE.Mesh(new THREE.RingGeometry(.42, .62, 36), waveMat);
+  innerRing.rotation.x = -Math.PI / 2;
+  shockwave.add(innerRing);
+  cloud.add(shockwave);
+
+  cloud.userData = { isMega: true, t: 0, life: 4.2, stem, cap, shockwave, mats: [stemMat, capMat, rimMat, waveMat], light: glowLight };
+  scene.add(cloud);
+  fartClouds.push(cloud);
+
+  for (let i = 0; i < 24; i++) {
+    const a = (i / 24) * Math.PI * 2;
+    spawn(TEX.puff, new THREE.Vector3(Math.cos(a) * .4, .3 + (i % 4) * .45, -.15 + Math.sin(a) * .4), {
+      vel: new THREE.Vector3(Math.cos(a) * rnd(.4, .9), rnd(.35, 1.1), Math.sin(a) * rnd(.4, .9)),
+      life: rnd(1.8, 2.8),
+      size: rnd(.18, .32),
+      grow: 1.4,
+      opacity: .9,
+      color: pick(['#d8f5a2', '#a9e34b', '#ffd43b', '#ff922b'])
+    });
+  }
+  return cloud;
+}
+function updateFartClouds(dt) {
+  for (let i = fartClouds.length - 1; i >= 0; i--) {
+    const c = fartClouds[i], u = c.userData;
+    u.t += dt;
+    const p = u.t / u.life;
+    if (u.isMega) {
+      const rise = ease(Math.min(1, u.t / .45));
+      u.stem.scale.set(1 + u.t * .08, rise * (1 + u.t * .06), 1 + u.t * .08);
+      u.cap.position.y = .5 + rise * 1.45 + u.t * .12;
+      const capScale = (.35 + .65 * rise) * (1 + u.t * .09);
+      u.cap.scale.setScalar(capScale);
+      u.cap.rotation.y += dt * .45;
+      const waveScale = .55 + ease(Math.min(1, u.t / 1.4)) * 2.15;
+      u.shockwave.scale.set(waveScale, 1, waveScale);
+      const fade = p > .74 ? Math.max(0, 1 - (p - .74) / .26) : 1;
+      u.mats.forEach((m, idx) => { m.opacity = (idx === 3 ? Math.max(0, 1 - p * 1.1) : .94) * fade; });
+      if (u.light) u.light.intensity = 4.5 * fade;
+    } else {
+      c.position.y += dt * .38;
+      c.scale.setScalar(1 + u.t * 1.1);
+      if (u.mat) u.mat.opacity = .85 * Math.max(0, 1 - p);
+    }
+    if (u.t >= u.life) {
+      if (c.parent) c.parent.remove(c);
+      fartClouds.splice(i, 1);
+    }
+  }
+}
+function renderFartBtn() {
+  const btn = $('fartBtn');
+  if (!btn) return;
+  const mega = game.fartCharge >= 10;
+  $('fartCount').textContent = `${game.fartCharge}/10`;
+  $('fartFill').style.width = `${Math.min(100, (game.fartCharge / 10) * 100)}%`;
+  $('fartIcon').textContent = mega ? '🍄' : '💨';
+  $('fartLabel').textContent = mega ? '蘑菇云大屁!' : '放小屁';
+  btn.classList.toggle('mega', mega);
+}
+function triggerFart() {
+  audio();
+  if (game.paused || !game.critter) return;
+  if (game.fartCharge < 10) {
+    game.fartCharge++;
+    playFartSfx(false);
+    spawnSmallFart3D();
+    game.wobble = .11;
+    renderFartBtn();
+    if (game.fartCharge === 10) {
+      bubble('⚡ 10/10 小屁蓄满啦！再按一下发射 🍄 蘑菇云大屁！', 3200);
+    } else {
+      bubble(`💨 噗噗~ 放了个小屁！(${game.fartCharge}/10)`, 1800);
+    }
+    return { type: 'small', charge: game.fartCharge, activeMushroomClouds: fartClouds.filter((c) => c.userData.isMega).length };
+  }
+  game.fartCharge = 0;
+  playFartSfx(true);
+  const cloud = spawnMushroomCloudMegaFart();
+  game.wobble = .20;
+  game.fartBounce = .48;
+  renderFartBtn();
+  addStars(1, cloud.position.clone().add(new THREE.Vector3(0, 1.8, 0)));
+  bubble('🍄 轰隆隆！！超级蘑菇云大屁发射啦！！💨😆', 3800);
+  return { type: 'mega', charge: game.fartCharge, activeMushroomClouds: fartClouds.filter((c) => c.userData.isMega).length };
 }
 
 /* ---------- special damages ---------- */
@@ -680,9 +1026,11 @@ function makeSocket(eyeGroup) {
 /* ============================== Visit lifecycle ============================== */
 function clearCritter() {
   game.visitVersion = (game.visitVersion || 0) + 1;
+  clearFartClouds();
   if (game.critter) { game.critter.parent && game.critter.parent.remove(game.critter); }
   if (game.ear && game.ear.obj.parent === scene) scene.remove(game.ear.obj);
   game.critter = null; game.damages = []; game.ear = null; game.eye = null; game.pend = null; game.fadedMats = null;
+  game.diaperFitted = false; game.fartBounce = 0;
 }
 function previewCritter(id) {
   clearCritter();
@@ -699,6 +1047,7 @@ function startVisit() {
   const c = buildCritter(id);
   c.position.y = game.meta.isNightmare45cm ? 1.07 : .97; holder.add(c); holder.rotation.y = 0; turntable.rotation.y = 0;
   game.critter = c; game.anim = 'asleep'; game.heartIn = false; game.accessories = new Set(); game.fixedCount = 0; game.checkupStarted = false;
+  game.fartCharge = 0; renderFartBtn();
   c.updateMatrixWorld(true);
 
   // Pick a random set of damages: every visit is different.
@@ -713,7 +1062,10 @@ function startVisit() {
   surfaceHits(c, counts.mud, .3).forEach((h) => addDamage('mud', h));
   surfaceHits(c, counts.dust, .3).forEach((h) => addDamage('dust', h));
   surfaceHits(c, counts.burr, .28).forEach((h) => addDamage('burr', h));
-
+  let eczemaHits = surfaceHits(c, 1, .20, 'front');
+  if (!eczemaHits.length) eczemaHits = surfaceHits(c, 1, .10);
+  eczemaHits.forEach((h) => addDamage('eczema', h));
+  addWetPantsDamage(c, id, game.meta);
 
   if (optional.includes('eye')) {
     const eyes = c.parts.eyes, side = pick(['leftEye', 'rightEye']);
@@ -745,7 +1097,7 @@ function startVisit() {
   c.position.y = 3.6;
   setCam('near');
   $('home').classList.add('hidden');
-  ['ticket', 'toolbox', 'turn', 'pauseBtn', 'stopBtn'].forEach((id2) => $(id2).classList.remove('hidden'));
+  ['ticket', 'toolbox', 'turn', 'fartBtn', 'pauseBtn', 'stopBtn'].forEach((id2) => $(id2).classList.remove('hidden'));
   $('dress').classList.add('hidden');
   $('tkIcon').src = game.meta.icon; $('tkName').textContent = game.meta.name; $('tkWho').textContent = game.meta.who;
   selectTool(null);
@@ -838,7 +1190,13 @@ function hitCritter(x, y) {
   if (!game.critter) return null;
   const r = canvas.getBoundingClientRect();
   raycaster.setFromCamera(new THREE.Vector2(((x - r.left) / r.width) * 2 - 1, -((y - r.top) / r.height) * 2 + 1), camera);
-  return raycaster.intersectObject(game.critter, true)[0] || null;
+  const hit = raycaster.intersectObject(game.critter, true)[0];
+  if (hit) return hit;
+  const ts = screenOf(game.critter.parts.torso), hs = screenOf(game.critter.parts.head);
+  if (Math.hypot(ts.x - x, ts.y - y) < 95 || Math.hypot(hs.x - x, hs.y - y) < 95) {
+    return { point: game.critter.parts.torso.getWorldPosition(new THREE.Vector3()), object: game.critter.parts.torso };
+  }
+  return null;
 }
 function fixed(d, where) {
   if (d.done) return;
@@ -910,23 +1268,31 @@ function holdTool(x, y, dt) {
     }
     return;
   }
-  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet', comb: 'tangle' }[t];
+  const type = { brush: 'dust', sponge: 'mud', dryer: 'wet', comb: 'tangle', moisture: 'eczema' }[t];
   if (!type) return;
   if (t === 'dryer') loopNoise('dryer', true, 650, 'lowpass', .045); else rubSfx(t);
   const d = nearestDamage(x, y, [type], 95);
   if (!d) return;
-  d.hp -= dt / (t === 'dryer' ? 1.3 : 1.6);
+  d.hp -= dt / (t === 'dryer' ? 1.3 : t === 'moisture' ? 1.35 : 1.6);
   const p = d.anchor.getWorldPosition(new THREE.Vector3());
   d.anchor.scale.setScalar(.35 + .65 * Math.max(0, d.hp));
   if (t === 'sponge' && Math.random() < .25) spawn(TEX.bubble, p.clone().add(new THREE.Vector3(rnd(-.08, .08), rnd(-.02, .06), .06)), { vel: new THREE.Vector3(rnd(-.05, .05), rnd(.12, .25), rnd(-.02, .05)), life: rnd(1.8, 2.8), size: rnd(.05, .09), grow: .3 });
   if ((t === 'brush' || t === 'comb') && Math.random() < .18) spawn(TEX.puff, p.clone(), { vel: new THREE.Vector3(rnd(-.25, .25), rnd(.05, .2), .15), life: 1.6, size: .1, grow: .8, opacity: .8 });
   if (t === 'dryer' && Math.random() < .2) spawn(TEX.soft, p.clone(), { vel: new THREE.Vector3(rnd(-.1, .1), .3, .1), life: 1.2, size: .08, grow: 1.5, opacity: .35 });
+  if (t === 'moisture' && Math.random() < .38) {
+    spawn(TEX.soft, p.clone().add(new THREE.Vector3(rnd(-.07, .07), rnd(-.05, .05), .05)), { vel: new THREE.Vector3(rnd(-.08, .08), rnd(.05, .16), rnd(.02, .08)), life: rnd(.9, 1.4), size: rnd(.06, .1), grow: .5, opacity: .85, color: pick(['#fffef8', '#d6f8ec', '#e3f4ff']) });
+    if (Math.random() < .45) spawn(TEX.sparkle, p.clone().add(new THREE.Vector3(rnd(-.08, .08), rnd(-.06, .08), .06)), { vel: new THREE.Vector3(rnd(-.12, .12), rnd(.08, .22), .06), life: .85, size: .065, add: true, color: '#9ef2d2' });
+  }
   if (d.hp <= 0) {
     removeDecal(d);
     if (type === 'mud') {
       // Washing leaves the fur wet: new drops appear to dry (a tiny chain reaction).
       const hit = { point: p, normal: tmpV2.set(0, 0, 1).applyQuaternion(d.anchor.getWorldQuaternion(tmpQ)).clone(), object: d.anchor.parent || game.critter };
       if (hit.object && hit.object !== scene) { const w = addDamage('wet', hit); w.anchor.scale.setScalar(.9); game.total++; renderTicket(); }
+    }
+    if (type === 'eczema') {
+      burst(p, 8, TEX.sparkle);
+      bubble('涂上凉凉的保湿霜，红红的湿疹消退啦，小皮肤滑溜溜！🧴✨', 2200);
     }
     fixed(d, p);
   }
@@ -944,6 +1310,20 @@ function tapTool(x, y) {
       const pos = d.anchor.getWorldPosition(new THREE.Vector3());
       burst(pos, 8, TEX.heart); removeDecal(d); fixed(d, pos);
       if (game.damages.some((q) => q.type === 'checkup' && !q.done)) bubble('软软的，暖暖的，可以抱抱啦！💗', 1800);
+      return true;
+    }
+  }
+  if (t === 'diaper') {
+    const d = nearestDamage(x, y, ['wet_pants'], 125) || (hit ? game.damages.find((q) => q.type === 'wet_pants' && !q.done) : null);
+    if (d) {
+      const p = d.anchor.getWorldPosition(new THREE.Vector3());
+      removeDecal(d);
+      attachDiaperMesh(game.critter, game.sel, game.meta, true);
+      tone(520, 780, .14, .05, 'triangle');
+      tone(780, 1040, .16, .045, 'sine', .1);
+      burst(p, 10, TEX.sparkle);
+      bubble('擦干小屁股，换上干爽洁白的小尿布啦！软乎乎真舒服！🩲✨', 2400);
+      fixed(d, p);
       return true;
     }
   }
@@ -991,8 +1371,8 @@ function tapTool(x, y) {
   if (t === 'button') {
     const d = nearestDamage(x, y, ['eye'], 90);
     if (d) {
-      const eg = game.eye.group; eg.visible = true; eg.scale.setScalar(.01);
-      const t0 = performance.now(); const step = () => { const k = Math.min(1, (performance.now() - t0) / 500); const s = k < .7 ? k / .7 * 1.2 : 1.2 - (k - .7) / .3 * .2; eg.scale.setScalar(Math.max(.01, s)); game.eye.socket.scale.setScalar(1 - k); if (k < 1) requestAnimationFrame(step); else game.eye.socket.visible = false; };
+      const eg = game.eye.group, sock = game.eye.socket; eg.visible = true; eg.scale.setScalar(.01);
+      const t0 = performance.now(); const step = () => { const k = Math.min(1, (performance.now() - t0) / 500); const s = k < .7 ? k / .7 * 1.2 : 1.2 - (k - .7) / .3 * .2; eg.scale.setScalar(Math.max(.01, s)); sock.scale.setScalar(Math.max(.001, 1 - k)); if (k < 1) requestAnimationFrame(step); else sock.visible = false; };
       step(); tone(500, 250, .14, .06); tone(1200, 1400, .08, .03, 'sine', .1);
       fixed(d, d.anchor.getWorldPosition(new THREE.Vector3())); return true;
     }
@@ -1104,6 +1484,7 @@ function shelfSpot(i) { return new THREE.Vector3(2.15 + (i % 6) * .5, SHELF_Y[1]
 function makeMini(entry, i) {
   const c = buildCritter(entry.id);
   c.traverse((o) => { if (o.isLight) o.visible = false; });
+  if (entry.diaper) attachDiaperMesh(c, entry.id, CRITTERS[entry.id], false);
   (entry.acc || []).forEach((k) => toggleAccessory(c, k));
   c.scale.setScalar(.32); c.position.copy(shelfSpot(i)); c.rotation.y = rnd(-.3, .3);
   scene.add(c); shelfMinis.push(c); return c;
@@ -1111,11 +1492,13 @@ function makeMini(entry, i) {
 save.shelf.slice(-6).forEach((e, i) => makeMini(e, i));
 function goToShelf() {
   $('dress').classList.add('hidden');
+  $('fartBtn').classList.add('hidden');
+  clearFartClouds();
   game.state = 'leaving';
   renderer.render(scene, camera); const after = canvas.toDataURL('image/jpeg', .85);
   const c = game.critter; const idx = Math.min(save.shelf.length, 5);
   if (shelfMinis.length >= 6) { scene.remove(shelfMinis.shift()); shelfMinis.forEach((m, i) => m.position.copy(shelfSpot(i))); }
-  const entry = { id: game.sel, acc: [...game.accessories] };
+  const entry = { id: game.sel, acc: [...game.accessories], diaper: !!game.diaperFitted };
   save.shelf.push(entry); save.shelf = save.shelf.slice(-6); persist();
   scene.attach(c);
   const start = c.position.clone(), s0 = c.scale.x, end = shelfSpot(Math.min(idx, shelfMinis.length)), t0 = performance.now();
@@ -1159,8 +1542,9 @@ function renderPatients() {
 }
 function goHome() {
   stopSpeech();
+  clearFartClouds();
   game.state = 'home'; game.paused = false;
-  ['ticket', 'toolbox', 'turn', 'dress', 'pauseBtn', 'stopBtn', 'pauseVeil', 'endVeil', 'bubble'].forEach((id) => $(id).classList.add('hidden'));
+  ['ticket', 'toolbox', 'turn', 'fartBtn', 'dress', 'pauseBtn', 'stopBtn', 'pauseVeil', 'endVeil', 'bubble'].forEach((id) => $(id).classList.add('hidden'));
   $('home').classList.remove('hidden');
   Object.keys(loops).forEach((k) => loopNoise(k, false));
   selectTool(null); setCam('home'); renderPatients(); previewCritter(game.sel);
@@ -1184,7 +1568,7 @@ canvas.addEventListener('pointerdown', (e) => {
   if (game.state === 'repair' && t && (onCritter || onEar || nearDamage)) {
     if (TOOL[t].hold) {
       pointer.mode = 'hold';
-      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded', comb: 'tangle' }[t];
+      const matches = { brush: 'dust', sponge: 'mud', dryer: 'wet', cloth: 'pendant', paint: 'faded', comb: 'tangle', moisture: 'eczema' }[t];
       const any = game.damages.some((d) => !d.done && d.type === matches);
       if (!any || (nearDamage && DMG[nearDamage.type].tool !== t && !['paint'].includes(t))) wrongToolHint(e.clientX, e.clientY);
     } else {
@@ -1216,6 +1600,7 @@ function moveCursor(e) {
 $('rotL').onclick = () => { game.spinTo = turntable.rotation.y - Math.PI / 3; tone(500, 600, .1, .03); };
 $('rotR').onclick = () => { game.spinTo = turntable.rotation.y + Math.PI / 3; tone(500, 600, .1, .03); };
 $('zoomBtn').onclick = () => setCam(camMode === 'near' ? 'far' : 'near');
+$('fartBtn').onclick = () => triggerFart();
 $('voicePreviewBtn').onclick = () => say('你好呀！我是你的微笑小伙伴。我们一起，把爱和温暖缝进小小的补丁里吧！');
 $('startBtn').onclick = () => { music.started = true; startVisit(); };
 $('stopBtn').onclick = goHome;
@@ -1237,10 +1622,11 @@ function animateCritter(c, dt, t) {
   // Stuffing: flat & floppy -> round & fluffy
   game.flat += (game.flatTarget - game.flat) * Math.min(1, dt * 2.5);
   game.wobble = (game.wobble || 0) * Math.pow(.05, dt);
+  game.fartBounce = (game.fartBounce || 0) * Math.pow(.06, dt);
   const f = ease(game.flat), w = Math.sin(t * 14) * (game.wobble || 0);
   const bs = c.userData.baseScale || 1;
   let sy = (1 - .26 * (1 - f) - w) * bs, sxz = (1 + .12 * (1 - f) + w) * bs;
-  let y = (bs > 1 ? 1.07 : .97) - .2 * (1 - f);
+  let y = (bs > 1 ? 1.07 : .97) - .2 * (1 - f) + Math.abs(Math.sin(t * 11)) * (game.fartBounce || 0);
   if (game.anim === 'asleep') {
     const br = Math.sin(t * 1.3) * .012;
     sy += br;
@@ -1311,6 +1697,7 @@ function frame(now) {
     const mp = moteGeo.attributes.position; for (let i = 0; i < mp.count; i++) { let yv = mp.getY(i) + dt * .03; if (yv > 4.2) yv = .2; mp.setY(i, yv); mp.setX(i, mp.getX(i) + Math.sin(t * .3 + i) * dt * .02); } mp.needsUpdate = true;
     if (pointer.down && pointer.mode === 'hold' && game.state === 'repair') holdTool(pointer.x, pointer.y, dt);
     updateFx(dt);
+    updateFartClouds(dt);
     // Speech bubble follows the critter's head
     if (game.critter && !$('bubble').classList.contains('hidden')) {
       const hp = game.critter.parts.head.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, .85, 0)).project(camera);
@@ -1339,6 +1726,13 @@ window.__REPAIR3D__ = {
   holder,
   turntable,
   fixed,
+  holdTool,
+  tapTool,
+  triggerFart,
+  fartCharge: () => game.fartCharge,
+  fartClouds: () => fartClouds,
+  mushroomClouds: () => fartClouds.filter((c) => c.userData.isMega),
+  hasDiaper: () => !!(game.critter && game.critter.parts.torso.getObjectByName('critterDiaper')),
   damages: () => game.damages.map((d) => ({ type: d.type, done: d.done })),
   remaining: () => game.damages.filter((d) => !d.done).length,
   screen: (i) => { const d = game.damages[i]; const s = screenOf(d.anchor); return { x: s.x, y: s.y, facing: facing(d.anchor), type: d.type, done: d.done }; },

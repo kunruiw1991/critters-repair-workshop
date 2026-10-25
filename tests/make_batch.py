@@ -18,10 +18,25 @@ window.__T = (() => {
   const cv = document.getElementById('gl');
   const ev = (t, x, y) => (t === 'pointerdown' ? cv : window).dispatchEvent(new PointerEvent(t, {clientX: x, clientY: y, bubbles: true, pointerId: 1, isPrimary: true, buttons: t === 'pointerup' ? 0 : 1}));
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const TOOLFOR = {mud: 'sponge', dust: 'brush', burr: 'tweezers', tear: 'needle', wet: 'dryer', eye: 'button', ear: 'needle', flat: 'cotton', faded: 'paint', pendant: 'cloth', tangle: 'comb', patch: 'patch', checkup: 'checkup'};
-  const HOLD = {sponge: 1, brush: 1, dryer: 1, paint: 1, cloth: 1, comb: 1};
+  const TOOLFOR = {mud: 'sponge', dust: 'brush', burr: 'tweezers', tear: 'needle', wet: 'dryer', eye: 'button', ear: 'needle', flat: 'cotton', faded: 'paint', pendant: 'cloth', tangle: 'comb', patch: 'patch', eczema: 'moisture', wet_pants: 'diaper', checkup: 'checkup'};
+  const HOLD = {sponge: 1, brush: 1, dryer: 1, paint: 1, cloth: 1, comb: 1, moisture: 1};
   async function tap(x, y) { ev('pointerdown', x, y); await sleep(60); ev('pointerup', x, y); }
   async function hold(x, y, ms) { ev('pointerdown', x, y); for (let k = 0; k < ms / 100; k++) { ev('pointermove', x + (k % 2 ? 3 : -3), y); await sleep(100); } ev('pointerup', x, y); }
+  async function chargeFarts10() {
+    const btn = document.getElementById('fartBtn');
+    const counts = [];
+    for (let i = 0; i < 10; i++) { btn.click(); await sleep(60); counts.push(document.getElementById('fartCount').textContent); }
+    const megaReady = btn.classList.contains('mega') && document.getElementById('fartCount').textContent === '10/10';
+    return {counts: counts.join(','), megaReady};
+  }
+  async function fireMegaFart() {
+    const btn = document.getElementById('fartBtn');
+    btn.click();
+    await sleep(380);
+    const hasMegaCloud = window.__REPAIR3D__.mushroomClouds().length > 0;
+    const resetCount = document.getElementById('fartCount').textContent;
+    return {hasMegaCloud, resetCount};
+  }
   async function fixAll(maxSteps) {
     const R = window.__REPAIR3D__, log = [];
     for (let s = 0; s < maxSteps && R.remaining() > 0; s++) {
@@ -38,9 +53,9 @@ window.__T = (() => {
       await sleep(500);
       log.push(type + (R.damages()[i].done ? ':ok' : ':NO(' + Math.round(p.x) + ',' + Math.round(p.y) + ',f=' + p.facing + ')'));
     }
-    return log.join(' ') + ' | remaining=' + R.remaining();
+    return log.join(' ') + ' | remaining=' + R.remaining() + ' | hasDiaper=' + R.hasDiaper();
   }
-  return {ev, sleep, tap, hold, fixAll};
+  return {ev, sleep, tap, hold, chargeFarts10, fireMegaFart, fixAll};
 })();
 'harness';
 """
@@ -53,14 +68,18 @@ steps = [
     {"action": "sleep", "duration": "3500ms"},
     {"action": "eval", "print": "true", "expression": "JSON.stringify({st: __REPAIR3D__.state, dmg: __REPAIR3D__.damages().map(d=>d.type).join(','), verts: __REPAIR3D__.vertexCount()})"},
     {"action": "screenshot", "file": f"{out}/{critter}_1_broken.png"},
+    {"action": "eval", "print": "true", "expression": "(async()=>{const f=await __T.chargeFarts10();return JSON.stringify(f)})()"},
+    {"action": "screenshot", "file": f"{out}/{critter}_1a_fart10.png"},
+    {"action": "eval", "print": "true", "expression": "(async()=>{const f=await __T.fireMegaFart();return JSON.stringify(f)})()"},
+    {"action": "screenshot", "file": f"{out}/{critter}_1b_megafart.png"},
     {"action": "eval", "print": "true", "expression": "(async()=>{const r=await __T.fixAll(6);return r})()"},
     {"action": "screenshot", "file": f"{out}/{critter}_2_midway.png"},
     {"action": "eval", "print": "true", "expression": "(async()=>{const r=await __T.fixAll(40);return r})()"},
-    {"action": "eval", "print": "true", "expression": "(async()=>{await __T.sleep(1500);const R=__REPAIR3D__;R.selectTool('heart');const c=R.critterScreen();await __T.tap(c.x,c.y);await __T.sleep(3500);return 'state='+R.state})()"},
+    {"action": "eval", "print": "true", "expression": "(async()=>{await __T.sleep(1000);const R=__REPAIR3D__;R.selectTool('heart');const c=R.critterScreen();await __T.tap(c.x,c.y);for(let w=0;w<40&&R.state!=='awake';w++)await __T.sleep(200);return 'state='+R.state})()"},
     {"action": "screenshot", "file": f"{out}/{critter}_3_awake.png"},
-    {"action": "eval", "print": "true", "expression": "(async()=>{await __T.sleep(2500);const it=[...document.querySelectorAll('#dressItems .tool')];it[0]&&it[0].click();it[2]&&it[2].click();await __T.sleep(1200);return 'dress items='+it.length})()"},
+    {"action": "eval", "print": "true", "expression": "(async()=>{for(let w=0;w<40&&document.querySelectorAll('#dressItems .tool').length===0;w++)await __T.sleep(200);const it=[...document.querySelectorAll('#dressItems .tool')];it[0]&&it[0].click();it[2]&&it[2].click();await __T.sleep(800);return 'dress items='+it.length})()"},
     {"action": "screenshot", "file": f"{out}/{critter}_4_dress.png"},
-    {"action": "eval", "print": "true", "expression": "(async()=>{document.getElementById('shelfBtn').click();await __T.sleep(3800);return 'endVeil='+!document.getElementById('endVeil').classList.contains('hidden')+' save='+localStorage.getItem('critterRepair3D_v1')})()"},
+    {"action": "eval", "print": "true", "expression": "(async()=>{document.getElementById('shelfBtn').click();for(let w=0;w<40&&document.getElementById('endVeil').classList.contains('hidden');w++)await __T.sleep(250);return 'endVeil='+!document.getElementById('endVeil').classList.contains('hidden')+' save='+localStorage.getItem('critterRepair3D_v1')})()"},
     {"action": "screenshot", "file": f"{out}/{critter}_5_card.png"},
     {"action": "eval", "print": "true", "expression": "(async()=>{document.getElementById('nextBtn').click();await __T.sleep(1500);return 'state='+__REPAIR3D__.state+' errs='+JSON.stringify(__errs)})()"},
     {"action": "screenshot", "file": f"{out}/{critter}_6_home_shelf.png"},
